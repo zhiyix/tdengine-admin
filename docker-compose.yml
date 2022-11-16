@@ -1,18 +1,20 @@
 version: "3"
 
 services:
-  idengine-admin:
+  tdengine-admin:
     build:
       context: .
-    image: registry.observerai.com/iov/idengine-admin:v1.0
-    # image: registry.cn-hangzhou.aliyuncs.com/artifacts/python-dynamic-library-converter:v0.4
-    container_name: idengine-admin
+    image: registry.cn-hangzhou.aliyuncs.com/aiov/tdengine-admin:v0.1
+    container_name: tdengine-admin
     environment:
       TZ: 'Asia/Shanghai'
-      # GRANT_SUDO: 'yes'
     volumes:
-     - ./_img:/app/img
+     - ./config:/app/img
     ports:
      - 6380:80
-    # privileged: true
     restart: unless-stopped
+
+networks:
+  default:
+    name: docker_iovnet
+    external: true

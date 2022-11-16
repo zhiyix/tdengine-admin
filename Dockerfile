@@ -7,12 +7,10 @@ FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
 
 COPY package.json .
-COPY ./docker/npmrc /root/.npmrc
 RUN npm config set registry https://registry.npm.taobao.org --global \
  && npm install 
 COPY . .
 RUN npm run build
-RUN ls -al
 
 # Runtime
 FROM nginx:${NGINX_VERSION}
