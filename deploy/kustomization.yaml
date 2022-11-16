@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- base
+
+namespace: iov-test
+
+# 版本号添加到所有对象的label
+labels:
+  - pairs:
+      app: tdengine-admin
+      project: iov
+    includeSelectors: true

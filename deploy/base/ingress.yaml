@@ -1,0 +1,30 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: tdengine-admin
+  annotations:
+    client-max-body-size: '0'
+    nginx.org/rewrites: serviceName=gateway rewrite=/
+    nginx.org/server-snippets: |
+      location /api {
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass http://iov-taosd.iov-test:6041;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_read_timeout 600s;
+        proxy_send_timeout 600s;
+      }
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: tdengine-admin.user-domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tdengine-admin
+                port:
+                  name: http

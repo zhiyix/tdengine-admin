@@ -1,0 +1,15 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: tdengine-admin
+spec:
+  template:
+    spec:
+      containers:
+        - name: tdengine-admin
+          image: registry.cn-hangzhou.aliyuncs.com/aiov/tdengine-admin:v0.2.1
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          imagePullPolicy: Always
