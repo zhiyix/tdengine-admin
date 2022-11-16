@@ -1,0 +1,50 @@
+[
+    {
+        "value": "SHOW DATABASES;"
+    },
+    {
+        "value": "SHOW CREATE DATABASE vehicle;"
+    },
+    {
+        "value": "DESCRIBE vehicle.`product_ES400V_WANGZHIYI`;"
+    },
+    {
+        "value": "SHOW vehicle.TABLES"
+    },
+    {
+        "value": "SELECT DISTINCT TBNAME FROM  vehicle.`product_ES400V_WANGZHIYI`;"
+    },
+    {
+        "value": "SELECT CLIENT_VERSION();"
+    },
+    {
+        "value": "SELECT SERVER_VERSION();"
+    },
+    {
+        "value": "SELECT SERVER_STATUS();"
+    },
+    {
+        "value": "SELECT * FROM  vehicle.`product_ES400V_WANGZHIYI` WHERE origin_time >= NOW - 1h;"
+    },
+    {
+        "value": "SHOW DNODES;"
+    },
+    {
+        "value": "SHOW MNODES;"
+    },
+    {
+        "value": "SHOW CONNECTIONS;"
+    },
+    {
+        "value": "SHOW FUNCTIONS;"
+    },
+    {
+        "value": "SHOW USERS;"
+    },
+    {
+        "value": "RESET QUERY CACHE;"
+    },
+    {
+        "value": "select * from vehicle.`product_ES400V_WANGZHIYI`"
+    }
+]

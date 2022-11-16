@@ -1,0 +1,68 @@
+/* L011 */
+.el-drawer {
+  padding: 0px 0px 0px 20px;
+  width: 600px;
+}
+
+/* L020 */
+.el-menu {
+  border: none !important;
+  margin-top: 20px;
+  width: 90%;
+}
+
+/* L026 */
+.el-dialog {
+  z-index: 1000;
+}
+
+/* L049 */
+.el-aside {
+    /* text-align: center; */
+    border-right: 1px solid #efefef;
+}
+
+/* L058 */
+.el-header {
+  border-bottom: 1px solid #efefef;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  height: 35px !important;
+}
+.el-footer {
+  border-top: 1px solid #efefef;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  height: 35px !important;
+}
+
+/* L054 */
+.el-main {
+  padding-top: 0;
+}
+
+/* L077 */
+.icon1{
+  height: 16px;
+  width: 16px;
+  position: relative;
+  top: 2px;
+  cursor: pointer;
+  z-index: 111;
+}
+
+/* L170 */
+.el-select {
+    width: 130px;
+}
+
+/* L217 */
+.el-switch__label{
+    height: auto !important;
+}
+
+.el-autocomplete {
+  width: 100% !important;
+}
