@@ -19,11 +19,14 @@ import { mapGetters, mapState } from 'vuex'
 import JsonViewer from 'vue-json-viewer'
 const storage = require('../localDataStore.js')
 
+import taos_mixin from '../mixins/taos'
+
 export default {
   name: "TaosConsole",
   components: {
     JsonViewer
   },
+  mixins: [taos_mixin],
   computed: {
     ...mapState({
       theDB: state => state.taos.theDB, // 当前数据库
@@ -39,6 +42,19 @@ export default {
     return {
       consoleResult: '', // L26
       consoleInput: "", // L107
+      sqlTemplates: [
+        "SHOW DATABASES;",
+        "SHOW CREATE DATABASE log;",
+        "SHOW log.TABLES",
+        "SHOW CREATE TABLE log.`log`;",
+        "SELECT COUNT(*) FROM log.`log`",
+        "SHOW VARIABLES;",
+        "SHOW DNODES;",
+        "SHOW MNODES;",
+        "SHOW CONNECTIONS;",
+        "SHOW FUNCTIONS;",
+        "SHOW USERS;",
+      ]
     }
   },
   methods: {
@@ -55,14 +71,17 @@ export default {
       }) // rawSqlWithDB()
     },
     querySuggestionsAsync(queryString, cb) {
-      var suggestions = storage.getSQLSuggestions()
+      var suggestions = this.uq(
+        storage.getSQLSuggestions().map(s => s.value), 
+        this.sqlTemplates
+      )
+      suggestions = suggestions.map(s => JSON.parse(`{"value": "${s}"}`))
       var results = queryString ? suggestions.filter(this.createSuggestionFilter(queryString)) : suggestions;
 
-      // 调用 callback 返回建议列表的数据
-      cb(results);
       clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
-        console.log(results)
+        // 调用 callback 返回建议列表的数据
+        cb(results);
       }, 30 * Math.random());
     },
     createSuggestionFilter(queryString) {

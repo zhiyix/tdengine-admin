@@ -35,6 +35,13 @@ export default {
       })
       return info
     },
+    uq(array, array1) {
+      let setObj = new Set(array)
+      for(let i = 0; i < array1.length; i++) {
+        setObj.add(array1[i]);
+      }
+      return Array.from(setObj).sort();
+    },
     make_db_info(db_info) {
       console.log("[TAOX]", db_info.info)
       let info = []
