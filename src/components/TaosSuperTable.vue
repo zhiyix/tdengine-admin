@@ -1,126 +1,120 @@
 <template>
-  <el-container class="tableWrapper">
-    <el-aside class="mainAside" width="200px">
-      <div v-loading="loadingSuperList">
-        <!-- 超级表列表 -->
-        <el-table size="mini" highlight-current-row @current-change="handleClickSuperT" :data="superTables"
-          style="width: 100%">
-          <el-table-column label="超级表名" width="180">
-            <template slot="header" slot-scope="scope">
-              <span>超级表名</span>
-              <div class="iconWrapper">
-                <div class="iconWrapper_" @click.stop="SuperTdialog = true">
-                  <img class="icon1" v-if="searchIcon" @mouseenter="searchIcon = false"
-                    src="@/assets/img/search_.png">
-                  <img class="icon1" v-else src="@/assets/img/search.png" @mouseleave="searchIcon = true">
-                </div>
-                <div class="iconWrapper_" @click="freshSuperTList">
-                  <img class="icon1" v-if="freshIcon" @mouseenter="freshIcon = false"
-                    src="@/assets/img/fresh_.png">
-                  <img class="icon1" v-else src="@/assets/img/fresh.png" @mouseleave="freshIcon = true">
-                </div>
+  <el-container class="panelWrapper">
+    <el-aside class="mainAside" width="200px" v-loading="loadingSuperList">
+      <!-- 超级表列表 -->
+      <el-table size="mini" highlight-current-row @current-change="handleClickSuperT" :data="superTables"
+        style="width: 100%">
+        <el-table-column label="超级表名" width="180">
+          <template slot="header" slot-scope="scope">
+            <span>超级表名</span>
+            <div class="iconWrapper">
+              <div class="iconWrapper_" @click.stop="SuperTdialog = true">
+                <img class="icon1" v-if="searchIcon" @mouseenter="searchIcon = false" src="@/assets/img/search_.png">
+                <img class="icon1" v-else src="@/assets/img/search.png" @mouseleave="searchIcon = true">
               </div>
-            </template>
-            <template slot-scope="scope">
-              <img class="icon1" src="@/assets/img/file.png">
-              <span class="superTables">{{ scope.row.name }}</span>
-              <div class="iconWrapper2">
-                <!-- <img class="icon1" @click="editSuperT(scope.row.name)" src="@/assets/img/edit.png"> -->
-                <img class="icon1" @click.stop="deleteSuperT(scope.row.name)" src="@/assets/img/delete.png">
+              <div class="iconWrapper_" @click="freshSuperTList">
+                <img class="icon1" v-if="freshIcon" @mouseenter="freshIcon = false" src="@/assets/img/fresh_.png">
+                <img class="icon1" v-else src="@/assets/img/fresh.png" @mouseleave="freshIcon = true">
               </div>
-            </template>
-
-          </el-table-column>
-        </el-table>
-      </div>
-    </el-aside>
-    <el-main>
-      <div v-loading="loadingSuperTable">
-        <!-- 超级表筛选 -->
-        <el-dialog :close-on-click-modal="false" :before-close="concelSuperTableFilter" title="筛选条件"
-          :visible.sync="superTableFilterDialog">
-          <el-form :model="superTableFilter" label-width="80px">
-            <el-form-item label="数据项">
-              <el-checkbox-group v-model="superTableFilter.fields">
-                <el-row class="btnGroup">
-                  <el-button-group>
-                    <el-button size="mini" @click="STChooseAll">全选</el-button>
-                    <el-button size="mini" @click="STChooseReverse">反选</el-button>
-                  </el-button-group>
-                </el-row>
-                <el-row class="checkboxGroup">
-                  <el-col v-for="label in this.superTableLabelItems" :key="label" :span="8">
-                    <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
-                  </el-col>
-                </el-row>
-              </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label="每页数目">
-              <el-radio-group v-model="eachPageSuperTable">
-                <el-row class="checkboxGroup2">
-                  <el-radio :label="10">10</el-radio>
-                  <el-radio :label="15">15</el-radio>
-                  <el-radio :label="20">20</el-radio>
-                </el-row>
-              </el-radio-group>
-            </el-form-item>
-            <el-switch class="switchStyle" v-model="superTorder" active-value="ASC" inactive-value="DESC"
-              active-text="时间正序" inactive-text="时间倒序">
-            </el-switch>
-
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="concelSuperTableFilter" size="small">取消</el-button>
-            <el-button @click="postSuperTableFilter" size="small">设置</el-button>
-          </span>
-        </el-dialog>
-        <!-- 超级表数据 -->
-        <el-row class="superTSearchRow">
-          <el-col :span="3" class="dataPackerLabel">时间范围: </el-col>
-          <el-col :span="13">
-            <!-- <el-form  :model="superTableFilter" label-width="80px"> -->
-            <!-- <el-form-item label="时间范围" > -->
-            <div class="datePickerWrapper">
-              <el-date-picker @change="selectSuperData(false, true)" style="width: 100%;" size="small"
-                v-model="superTableFilter.superDateRange" value-format="yyyy-MM-dd HH:mm:ss"
-                type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
-                align="right">
-              </el-date-picker>
             </div>
-            <!-- </el-form-item> -->
-            <!-- </el-form> -->
-            <!-- <el-input v-model="superTableFilter.superTSearchText" class="input-with-select" size="small">
+          </template>
+          <template slot-scope="scope">
+            <img class="icon1" src="@/assets/img/file.png">
+            <span class="superTables">{{ scope.row.name }}</span>
+            <div class="iconWrapper2">
+              <!-- <img class="icon1" @click="editSuperT(scope.row.name)" src="@/assets/img/edit.png"> -->
+              <img class="icon1" @click.stop="deleteSuperT(scope.row.name)" src="@/assets/img/delete.png">
+            </div>
+          </template>
+
+        </el-table-column>
+      </el-table>
+    </el-aside>
+    <el-main v-loading="loadingSuperTable">
+      <!-- 超级表筛选 -->
+      <el-dialog :close-on-click-modal="false" :before-close="concelSuperTableFilter" title="筛选条件"
+        :visible.sync="superTableFilterDialog">
+        <el-form :model="superTableFilter" label-width="80px">
+          <el-form-item label="数据项">
+            <el-checkbox-group v-model="superTableFilter.fields">
+              <el-row class="btnGroup">
+                <el-button-group>
+                  <el-button size="mini" @click="STChooseAll">全选</el-button>
+                  <el-button size="mini" @click="STChooseReverse">反选</el-button>
+                </el-button-group>
+              </el-row>
+              <el-row class="checkboxGroup">
+                <el-col v-for="label in this.superTableLabelItems" :key="label" :span="8">
+                  <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
+                </el-col>
+              </el-row>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="每页数目">
+            <el-radio-group v-model="eachPageTable">
+              <el-row class="checkboxGroup2">
+                <el-radio :label="10">10</el-radio>
+                <el-radio :label="15">15</el-radio>
+                <el-radio :label="20">20</el-radio>
+              </el-row>
+            </el-radio-group>
+          </el-form-item>
+          <el-switch class="switchStyle" v-model="superTorder" active-value="ASC" inactive-value="DESC"
+            active-text="时间正序" inactive-text="时间倒序">
+          </el-switch>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="concelSuperTableFilter" size="small">取消</el-button>
+          <el-button @click="postSuperTableFilter" size="small">设置</el-button>
+        </span>
+      </el-dialog>
+      <!-- 超级表数据 -->
+      <el-row class="superTSearchRow">
+        <el-col :span="3" class="dataPackerLabel">时间范围: </el-col>
+        <el-col :span="13">
+          <!-- <el-form  :model="superTableFilter" label-width="80px"> -->
+          <!-- <el-form-item label="时间范围" > -->
+          <div class="datePickerWrapper">
+            <el-date-picker @change="selectSuperData(false, true)" style="width: 100%;" size="small"
+              v-model="superTableFilter.superDateRange" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange"
+              range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+            </el-date-picker>
+          </div>
+          <!-- </el-form-item> -->
+          <!-- </el-form> -->
+          <!-- <el-input v-model="superTableFilter.superTSearchText" class="input-with-select" size="small">
               <el-select v-model="superTableFilter.superTSearchColumn" slot="prepend" placeholder="请选择">
                 <el-option v-for="(label, index) in this.superTableLabelItems" :label="label" :value="label" :key="index"></el-option>
               </el-select>
               <el-button @click="searchSuperText" slot="append" icon="el-icon-search" size="small" class="superTSearchBtn"></el-button>
             </el-input> -->
-          </el-col>
-          <el-col :span="4" class="freshDataBtn">
-            <el-button @click="openSuperTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">
-              筛选条件</el-button>
-          </el-col>
-          <el-col :span="4" class="freshDataBtn">
-            <el-button @click="selectSuperData(false, false)" size="small" style="width: 100%"
-              icon="el-icon-refresh">数据刷新</el-button>
-          </el-col>
-        </el-row>
-
-        <el-table size="mini" :data="superTableData" border max-height="585" style="width: 100%">
-          <el-table-column fixed v-if="superTableLabel[0]" :prop="superTableLabel[0]"
-            :label="superTableLabel[0]" width="250">
+        </el-col>
+        <el-col :span="4" class="freshDataBtn">
+          <el-button @click="openSuperTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">
+            筛选条件</el-button>
+        </el-col>
+        <el-col :span="4" class="freshDataBtn">
+          <el-button @click="selectSuperData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新
+          </el-button>
+        </el-col>
+      </el-row>
+      <!-- 超级表分页 -->
+      <div class="paginationWrapper">
+        <el-pagination :hide-on-single-page="true" :current-page.sync="currentPageTable" background
+          @current-change="paginationSuperChange" :page-size="eachPageTable" layout="prev, pager, next"
+          :total="totalSuperTable">
+        </el-pagination>
+      </div>
+      <div class="tableWrapper">
+        <el-table size="mini" :data="superTableData" border stripe :max-height="tableHeight" style="width: 100%">
+          <el-table-column fixed v-if="superTableLabel[0]" :prop="superTableLabel[0]" :label="superTableLabel[0]"
+            width="250">
           </el-table-column>
-          <el-table-column v-for="(data, index) in superTableLabel.slice(1)" :key="index" :prop="data"
-            :label="data" width="180">
+          <el-table-column v-for="(data, index) in superTableLabel.slice(1)" :key="index" :prop="data" :label="data"
+            width="180">
           </el-table-column>
         </el-table>
-        <!-- 超级表分页 -->
-        <div class="paginationWrapper">
-          <el-pagination :hide-on-single-page="true" :current-page.sync="currentPageSuperTable"
-            @current-change="paginationSuperChange" :page-size="eachPageSuperTable" layout="prev, pager, next"
-            :total="totalSuperTable">
-          </el-pagination>
-        </div>
       </div>
     </el-main>
   </el-container>
@@ -161,11 +155,12 @@ export default {
         superTSearchColumn: "",
       },
       superTableFilterDialog: false, // L59
-      eachPageSuperTable: 10, // L79
-      currentPageSuperTable: 1, // L80
+      eachPageTable: 20, // L79
+      currentPageTable: 1, // L80
       searchIcon: true, // L94
       freshIcon: true, // L95
       superTorder: "ASC", // L105
+      tableHeight: '100%',
     }
   },
   methods: {
@@ -175,7 +170,7 @@ export default {
       this.freshSuperTables()
     },
     // L499
-    freshSuperTables(){
+    freshSuperTables() {
       this.$store.dispatch('taos/clear_super_table')
       this.$store.dispatch('taos/show_super_tables', {
         "connect_info": {
@@ -219,10 +214,10 @@ export default {
 
       //是否需要重置分页
       if (isResetPage) {
-        this.currentPageSuperTable = 1
+        this.currentPageTable = 1
       }
 
-      let offsetVal = (this.currentPageSuperTable - 1) * this.eachPageSuperTable
+      let offsetVal = (this.currentPageTable - 1) * this.eachPageTable
 
       //处理查询数据
       // if(!this.superTableFilter.superTSearchText.trim()){
@@ -236,7 +231,7 @@ export default {
           user: this.theLink.user,
           password: this.theLink.password
         },
-        "limit": this.eachPageSuperTable,
+        "limit": this.eachPageTable,
         "offset": offsetVal,
         "order": this.superTorder,
         "start_time": start_time,
@@ -289,7 +284,7 @@ export default {
               duration: 3000
             });
           }
-        } else {
+        } else if(res.msg) {
           // 拉取失败
           this.$message({
             message: res.msg,
@@ -299,14 +294,41 @@ export default {
         }
       }
     });
+    this.$nextTick(() => {
+      this.tableHeight = window.innerHeight - 200;
+      //后面的50：根据需求空出的高度，自行调整
+    })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.tableWrapper {
+.panelWrapper {
   height: 100%;
+
+  .mainAside {
+    .iconWrapper {
+      display: inline;
+      margin-left: 50px;
+
+      .iconWrapper_ {
+        display: inline;
+      }
+    }
+
+    .superTables {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    .iconWrapper2 {
+      display: inline;
+      position: absolute;
+      right: 14px;
+      height: 100%;
+    }
+  }
 
   .checkboxGroup {
     margin: 10px 0 0 10px;
@@ -326,31 +348,8 @@ export default {
     bottom: 3px;
   }
 
-  .mainAside {
-    .iconWrapper {
-      display: inline;
-      margin-left: 50px;
-
-      .iconWrapper_ {
-        display: inline;
-      }
-    }
-
-    .iconWrapper2 {
-      display: inline;
-      position: absolute;
-      right: 14px;
-      height: 100%;
-    }
-
-    .superTables {
-      margin-left: 10px;
-      cursor: pointer;
-    }
-  }
-
   .superTSearchRow {
-    margin: 20px 0 20px 0;
+    margin: 0px;
 
     .dataPackerLabel {
       line-height: 34px;
@@ -363,10 +362,14 @@ export default {
     }
   }
 
+  .tableWrapper {
+    height: calc(100% - 90px);
+
+  }
   .paginationWrapper {
-    margin-top: 20px;
+    margin: 12px 0 12px 0;
     display: flex;
-    justify-content: center;
+    justify-content: right;
   }
 }
 </style>

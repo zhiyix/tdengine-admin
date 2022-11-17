@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="mainAside">
     <!-- 连接列表 -->
     <el-drawer :before-close="beforeClosedrawer" title="数据库" size="380" :visible.sync="drawer" direction="ltr">
       <div v-loading="loadingLinks">
@@ -178,7 +178,7 @@ export default {
             user: "",
             password: "",
           }*/
-        } else {
+        } else if(res.msg) {
           //连接失败
           this.$message({
             message: res.msg,
@@ -198,7 +198,7 @@ export default {
             type: 'success',
             duration: 1000
           });
-        } else {
+        } else if(res.msg) {
           //连接失败，1.提示 2.删除当前连接 3.重新连接
           //1
           this.$message({
@@ -221,7 +221,7 @@ export default {
             type: 'success',
             duration: 1000
           });
-        } else {
+        } else if(res.msg) {
           // 拉取失败
           this.$message({
             message: res.msg,
@@ -241,8 +241,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.main {
-  height: 100%;
+.mainAside {
+  //height: 100%;
 
   .linkBtn {
     width: 90%;

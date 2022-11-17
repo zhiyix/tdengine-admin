@@ -1,97 +1,94 @@
 <template>
-  <el-container class="tableWrapper">
-    <el-aside class="mainAside" width="200px">
-      <div v-loading="loadingTableList">
-        <!-- 表列表 -->
-        <el-table size="mini" :data="tables" highlight-current-row @current-change="handleClickT" style="width: 100%">
-          <el-table-column label="表名" width="180">
-            <template slot="header" slot-scope="scope">
-              <span>表名</span>
-              <div class="iconWrapper">
-                <div class="iconWrapper_ " @click="Tdialog = true">
-                  <img class="icon1" v-if="searchIcon" @mouseenter="searchIcon = false" src="@/assets/img/search_.png">
-                  <img class="icon1" v-else src="@/assets/img/search.png" @mouseleave="searchIcon = true">
-                </div>
-                <div class="iconWrapper_" @click="freshTList">
-                  <img class="icon1" v-if="freshIcon" @mouseenter="freshIcon = false" src="@/assets/img/fresh_.png">
-                  <img class="icon1" v-else src="@/assets/img/fresh.png" @mouseleave="freshIcon = true">
-                </div>
+  <el-container class="panelWrapper">
+    <el-aside class="mainAside" width="200px" v-loading="loadingTableList">
+      <!-- 表列表 -->
+      <el-table size="mini" :data="tables" highlight-current-row @current-change="handleClickT" style="width: 100%">
+        <el-table-column label="表名" width="180">
+          <template slot="header" slot-scope="scope">
+            <span>表名</span>
+            <div class="iconWrapper">
+              <div class="iconWrapper_ " @click="Tdialog = true">
+                <img class="icon1" v-if="searchIcon" @mouseenter="searchIcon = false" src="@/assets/img/search_.png">
+                <img class="icon1" v-else src="@/assets/img/search.png" @mouseleave="searchIcon = true">
               </div>
-            </template>
-            <template slot-scope="scope">
-              <img class="icon1" src="@/assets/img/file.png">
-              <span class="surperTables">{{ scope.row.table_name }}</span>
-              <div class="iconWrapper2">
-                <!-- <img class="icon1" @click="editT" src="@/assets/img/edit.png"> -->
-                <img class="icon1" @click.stop="deleteT(scope.row.table_name)" src="@/assets/img/delete.png">
+              <div class="iconWrapper_" @click="freshTList">
+                <img class="icon1" v-if="freshIcon" @mouseenter="freshIcon = false" src="@/assets/img/fresh_.png">
+                <img class="icon1" v-else src="@/assets/img/fresh.png" @mouseleave="freshIcon = true">
               </div>
-            </template>
-
-          </el-table-column>
-        </el-table>
-        <el-dialog title="搜索表" :visible.sync="Tdialog" width="30%" :before-close="closeTdialog">
-          <el-input v-model="TdialogText">
-            <i slot="prefix" class="el-input__icon el-icon-search"></i>
-          </el-input>
-          <span slot="footer" class="dialog-footer">
-            <el-button size="small" @click="closeTdialog">取 消</el-button>
-            <el-button size="small" type="primary" @click="searchTList">确 定</el-button>
-          </span>
-        </el-dialog>
-      </div>
-    </el-aside>
-    <el-main>
-      <div v-loading="loadingTable">
-        <el-dialog :close-on-click-modal="false" :before-close="concelTableFilter" title="筛选条件"
-          :visible.sync="tableFilterDialog">
-          <el-form :model="tableFilter" label-width="80px">
-            <el-form-item label="数据项">
-              <el-checkbox-group v-model="tableFilter.fields">
-                <el-row class="btnGroup">
-                  <el-button-group>
-                    <el-button size="mini" @click="TChooseAll">全选</el-button>
-                    <el-button size="mini" @click="TChooseReverse">反选</el-button>
-                  </el-button-group>
-                </el-row>
-                <el-row class="checkboxGroup">
-                  <el-col v-for="label in this.tableLabelItems" :key="label" :span="8">
-                    <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
-                  </el-col>
-                </el-row>
-              </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label="每页数目">
-
-              <el-radio-group v-model="eachPageTable">
-                <el-row class="checkboxGroup2">
-                  <el-radio :label="10">10</el-radio>
-                  <el-radio :label="15">15</el-radio>
-                  <el-radio :label="20">20</el-radio>
-                </el-row>
-              </el-radio-group>
-            </el-form-item>
-            <el-switch class="switchStyle" v-model="Torder" active-value="ASC" inactive-value="DESC" active-text="时间倒序"
-              inactive-text="时间正序">
-            </el-switch>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="concelTableFilter" size="small">取消</el-button>
-            <el-button @click="postTableFilter" size="small">设置</el-button>
-          </span>
-        </el-dialog>
-        <!-- 表数据 -->
-        <el-row class="surperTSearchRow">
-
-          <el-col :span="3" class="dataPackerLabel">时间范围: </el-col>
-          <el-col :span="13">
-            <div class="datePickerWrapper">
-              <el-date-picker @change="selectTData(false, true)" style="width: 100%;" size="small"
-                v-model="tableFilter.dateRange" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange"
-                range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
-              </el-date-picker>
             </div>
-          </el-col>
-          <!-- <el-col :span="15">
+          </template>
+          <template slot-scope="scope">
+            <img class="icon1" src="@/assets/img/file.png">
+            <span class="surperTables">{{ scope.row.table_name }}</span>
+            <div class="iconWrapper2">
+              <!-- <img class="icon1" @click="editT" src="@/assets/img/edit.png"> -->
+              <img class="icon1" @click.stop="deleteT(scope.row.table_name)" src="@/assets/img/delete.png">
+            </div>
+          </template>
+
+        </el-table-column>
+      </el-table>
+      <el-dialog title="搜索表" :visible.sync="Tdialog" width="30%" :before-close="closeTdialog">
+        <el-input v-model="TdialogText">
+          <i slot="prefix" class="el-input__icon el-icon-search"></i>
+        </el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="small" @click="closeTdialog">取 消</el-button>
+          <el-button size="small" type="primary" @click="searchTList">确 定</el-button>
+        </span>
+      </el-dialog>
+    </el-aside>
+    <el-main v-loading="loadingTable">
+      <el-dialog :close-on-click-modal="false" :before-close="concelTableFilter" title="筛选条件"
+        :visible.sync="tableFilterDialog">
+        <el-form :model="tableFilter" label-width="80px">
+          <el-form-item label="数据项">
+            <el-checkbox-group v-model="tableFilter.fields">
+              <el-row class="btnGroup">
+                <el-button-group>
+                  <el-button size="mini" @click="TChooseAll">全选</el-button>
+                  <el-button size="mini" @click="TChooseReverse">反选</el-button>
+                </el-button-group>
+              </el-row>
+              <el-row class="checkboxGroup">
+                <el-col v-for="label in this.tableLabelItems" :key="label" :span="8">
+                  <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
+                </el-col>
+              </el-row>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="每页数目">
+
+            <el-radio-group v-model="eachPageTable">
+              <el-row class="checkboxGroup2">
+                <el-radio :label="10">10</el-radio>
+                <el-radio :label="15">15</el-radio>
+                <el-radio :label="20">20</el-radio>
+              </el-row>
+            </el-radio-group>
+          </el-form-item>
+          <el-switch class="switchStyle" v-model="Torder" active-value="ASC" inactive-value="DESC" active-text="时间倒序"
+            inactive-text="时间正序">
+          </el-switch>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="concelTableFilter" size="small">取消</el-button>
+          <el-button @click="postTableFilter" size="small">设置</el-button>
+        </span>
+      </el-dialog>
+      <!-- 表数据 -->
+      <el-row class="surperTSearchRow">
+
+        <el-col :span="3" class="dataPackerLabel">时间范围: </el-col>
+        <el-col :span="13">
+          <div class="datePickerWrapper">
+            <el-date-picker @change="selectTData(false, true)" style="width: 100%;" size="small"
+              v-model="tableFilter.dateRange" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange"
+              range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+            </el-date-picker>
+          </div>
+        </el-col>
+        <!-- <el-col :span="15">
             <el-input v-model="tableFilter.tableSearchText" class="input-with-select" size="small">
               <el-select v-model="tableFilter.tableSearchColumn" slot="prepend" placeholder="请选择">
                 <el-option v-for="(label, index) in this.tableLabelItems" :label="label" :value="label" :key="index"></el-option>
@@ -99,28 +96,29 @@
               <el-button @click="searchTableText" slot="append" icon="el-icon-search" size="small" class="surperTSearchBtn"></el-button>
             </el-input>
           </el-col> -->
-          <el-col :span="4" class="freshDataBtn">
-            <el-button @click="openTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件
-            </el-button>
-          </el-col>
-          <el-col :span="4" class="freshDataBtn">
-            <el-button @click="selectTData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新
-            </el-button>
-          </el-col>
-        </el-row>
-        <el-table size="mini" :data="tableData" border max-height="585" style="width: 100%;">
+        <el-col :span="4" class="freshDataBtn">
+          <el-button @click="openTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件
+          </el-button>
+        </el-col>
+        <el-col :span="4" class="freshDataBtn">
+          <el-button @click="selectTData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新
+          </el-button>
+        </el-col>
+      </el-row>
+      <!-- 表分页 -->
+      <div class="paginationWrapper">
+        <el-pagination @current-change="paginationChange" :hide-on-single-page="true" background
+          :current-page.sync="currentPageTable" :page-size="eachPageTable" layout="prev, pager, next"
+          :total="totalTable">
+        </el-pagination>
+      </div>
+      <div class="tableWrapper">
+        <el-table size="mini" :data="tableData" border stripe :max-height="tableHeight" style="width: 100%;">
           <el-table-column fixed v-if="tableLabel[0]" :prop="tableLabel[0]" :label="tableLabel[0]" width="250">
           </el-table-column>
           <el-table-column v-for="(data, index) in tableLabel.slice(1)" :key="index" :prop="data" :label="data">
           </el-table-column>
         </el-table>
-        <!-- 表分页 -->
-        <div class="paginationWrapper">
-          <el-pagination @current-change="paginationChange" :hide-on-single-page="true"
-            :current-page.sync="currentPageTable" :page-size="eachPageTable" layout="prev, pager, next"
-            :total="totalTable">
-          </el-pagination>
-        </div>
       </div>
     </el-main>
   </el-container>
@@ -158,13 +156,14 @@ export default {
         tableSearchColumn: "",
       },
       tableFilterDialog: false, // L58
-      eachPageTable: 10, // L81
+      eachPageTable: 20, // L81
       currentPageTable: 1, // L82
       searchIcon: true, // L94
       freshIcon: true, // L95
       Tdialog: false, // L102
       TdialogText: "", // L103
       Torder: "ASC", // L106
+      tableHeight: '100%',
     }
   },
   methods: {
@@ -318,7 +317,7 @@ export default {
       if (res != undefined && res != null) {
         if (res.status) {
           //
-        } else {
+        } else if(res.msg) {
           //连接失败
           this.$message({
             message: res.msg,
@@ -347,7 +346,7 @@ export default {
               duration: 3000
             });
           }
-        } else {
+        } else if(res.msg) {
           // 拉取失败
           this.$message({
             message: res.msg,
@@ -357,13 +356,17 @@ export default {
         }
       }
     });
+    this.$nextTick(() => {
+      this.tableHeight = window.innerHeight - 200;
+      //后面的50：根据需求空出的高度，自行调整
+    })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.tableWrapper {
+.panelWrapper {
   height: 100%;
 
   .mainAside {
@@ -408,7 +411,7 @@ export default {
   }
 
   .surperTSearchRow {
-    margin: 20px 0 20px 0;
+    margin: 0px;
 
     .dataPackerLabel {
       line-height: 34px;
@@ -419,12 +422,16 @@ export default {
     .freshDataBtn {
       padding-left: 20px;
     }
+  }
 
-    .paginationWrapper {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-    }
+  .tableWrapper {
+    height: calc(100% - 90px);
+
+  }
+  .paginationWrapper {
+    margin: 12px 0 12px 0;
+    display: flex;
+    justify-content: right;
   }
 }
 </style>

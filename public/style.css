@@ -1,3 +1,15 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+div {
+  margin: 0;
+  padding: 0;
+}
+
 /* L011 */
 .el-drawer {
   padding: 0px 0px 0px 20px;
@@ -40,7 +52,8 @@
 
 /* L054 */
 .el-main {
-  padding-top: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 /* L077 */
@@ -66,3 +79,17 @@
 .el-autocomplete {
   width: 100% !important;
 }
+
+.el-tabs--card {
+  height: calc(100vh - 110px);
+  /* overflow-y: auto; */
+}
+
+.el-tab-pane {
+  height: calc(100vh - 110px);
+  overflow-y: auto;
+}
+/*
+.el-table__body-wrapper {
+  height: 100% !important;
+}*/

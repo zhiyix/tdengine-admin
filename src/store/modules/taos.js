@@ -32,8 +32,8 @@ const state = () => ({
   tableLabel:           [], // L75
   loadingTableList:  false, // L76
   loadingTable:      false, // L77
-  eachPageSuperTable:   10, // L79
-  currentPageSuperTable: 1, // L80
+  eachPageTable:   10, // L79
+  currentPageTable: 1, // L80
   searchIcon:         true, // L94
   freshIcon:          true, // L94
   links:                [], // L96
@@ -159,6 +159,7 @@ const actions = {
 
     // showTables
     taos_api.show_tables(params['connect_info'], params['db']).then(res => {
+      console.log(res)
       if (res.status) {
         commit('setTables', res.data)
         commit('setShowTableResponse', res)

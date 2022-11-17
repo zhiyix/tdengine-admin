@@ -2,25 +2,6 @@
   <div id="app">
     <ConnList ref="superTable" />
     <el-container class="main">
-      <el-header>
-        <el-button class="switchBtn" @click="drawer = true" type="text" size="small">
-          <img class="icon" src="@/assets/img/switch.png" />
-          切换
-        </el-button>
-        <div class="footTextWrapper">
-
-        </div>
-        <div class="footText">当前连接:</div>
-        <div class="footText greyText">{{ theLink.name }}</div>
-        <div class="footText">主机:</div>
-        <div class="footText greyText">{{ theLink.host }}</div>
-        <div class="footText">端口:</div>
-        <div class="footText greyText">{{ theLink.port }}</div>
-        <div class="footText">用户名:</div>
-        <div class="footText greyText">{{ theLink.user }}</div>
-        <div class="footText">数据库:</div>
-        <div class="footText greyText">{{ theDB }}</div>
-      </el-header>
       <el-container class="mainContent">
         <el-tabs v-model="activeTab" type="border-card" class="mainTab" @tab-click="handleSwichTab">
           <el-tab-pane label="超级表" class="tablePage" name="1">
@@ -44,6 +25,25 @@
           </el-tab-pane>
         </el-tabs>
       </el-container>
+      <el-footer>
+        <el-button class="switchBtn" @click="drawer = true" type="text" size="small">
+          <img class="icon" src="@/assets/img/switch.png" />
+          切换
+        </el-button>
+        <div class="footTextWrapper">
+
+        </div>
+        <div class="footText">当前连接:</div>
+        <div class="footText greyText">{{ theLink.name }}</div>
+        <div class="footText">主机:</div>
+        <div class="footText greyText">{{ theLink.host }}</div>
+        <div class="footText">端口:</div>
+        <div class="footText greyText">{{ theLink.port }}</div>
+        <div class="footText">用户名:</div>
+        <div class="footText greyText">{{ theLink.user }}</div>
+        <div class="footText">数据库:</div>
+        <div class="footText greyText">{{ theDB }}</div>
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -110,13 +110,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-html,
-body,
-div {
-  margin: 0;
-  padding: 0;
-}
-
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -136,8 +129,8 @@ div {
         box-shadow: none;
 
         .tablePage {
-          height: 90%;
-
+          // height: 90%;
+          height: calc(100vh - 110px);
         }
       }
     }

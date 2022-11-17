@@ -8,7 +8,7 @@
     <div class="resultPlace">
       <!-- <el-input :rows='1000' type="textarea" placeholder="运行结果" v-model="consoleResult" :disabled="true"></el-input> -->
       <!-- <div style="height:100%;overflow-y:auto" class="resultPlaceTitle">{{ consoleResult }}</div>-->
-      <json-viewer style="height:100%;overflow-y:auto" class="resultPlaceTitle" :expand-depth=5 copyable boxed
+      <json-viewer style="height:100%;overflow-y:auto" class="resultPlaceTitle_" :expand-depth=5 copyable unboxed
         :value="consoleResult"></json-viewer>
     </div>
   </div>
@@ -89,7 +89,7 @@ export default {
             duration: 500
           });
           this.consoleResult = res.data
-        } else {
+        } else if(res.msg) {
           //连接失败
           this.$message({
             message: res.msg,
@@ -106,12 +106,12 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 .consoleWrapper {
-  height: 90%;
+  height: 100%;
   width: 100%;
 
   .resultPlace {
-    height: 92%;
-    width: 100%;
+    height: calc(100% - 55px - 2px); //92%;
+    //width: 100%;
     border: 1px solid #DCDFE6;
     border-radius: 4px;
     margin-top: 15px;
