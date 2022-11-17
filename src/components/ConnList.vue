@@ -144,7 +144,7 @@ export default {
     alartDB(link, db_name) {
       //切换数据库前先清空表
       this.$store.dispatch('taos/change_db_info', 
-        this.make_db_info({"name": db_name, "info": link.dbs})
+        this.make_db_info({"name": db_name, "info": link.dbs, "version": link.version})
       ) // dbInfo
       this.$store.dispatch('taos/clear_super_table')
       this.$store.dispatch('taos/clear_table')

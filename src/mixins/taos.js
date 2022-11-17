@@ -51,6 +51,11 @@ export default {
             "value": `${item['status']}` 
           })
           info.push({ 
+            "name": "version", 
+            "description": "数据库版本", 
+            "value": `${db_info.version}` 
+          })
+          info.push({ 
             "name": "create_time", 
             "description": "创建时间", 
             "value": `${item['created_time']}` 

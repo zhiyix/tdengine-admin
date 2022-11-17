@@ -43,6 +43,8 @@
         <div class="footText greyText">{{ theLink.user }}</div>
         <div class="footText">数据库:</div>
         <div class="footText greyText">{{ theDB }}</div>
+        <div class="footText">发布:</div>
+        <div class="footText greyText">v0.2.3</div>
       </el-footer>
     </el-container>
   </div>
