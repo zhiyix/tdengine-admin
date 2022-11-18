@@ -8,7 +8,7 @@
             <TaosSuperTable ref="super_table_ref" />
           </el-tab-pane>
           <el-tab-pane label="表" class="tablePage" name="2">
-            <TaosTables ref="table_ref" />
+            <TaosSubTable ref="table_ref" />
           </el-tab-pane>
           <el-tab-pane label="控制台" name="3">
             <TaosConsole ref="console_ref" />
@@ -44,7 +44,7 @@
         <div class="footText">数据库:</div>
         <div class="footText greyText">{{ theDB }}</div>
         <div class="footText">发布:</div>
-        <div class="footText greyText">v0.2.3</div>
+        <div class="footText greyText">v0.2.5</div>
       </el-footer>
     </el-container>
   </div>
@@ -55,7 +55,7 @@ import { mapGetters, mapState } from 'vuex'
 import { currency } from './currency'
 import ConnList from './components/ConnList.vue'
 import TaosSuperTable from './components/TaosSuperTable.vue'
-import TaosTables from './components/TaosTables.vue'
+import TaosSubTable from './components/TaosSubTable.vue'
 import TaosConsole from './components/TaosConsole.vue'
 
 export default {
@@ -63,7 +63,7 @@ export default {
   components: {
     ConnList,
     TaosSuperTable,
-    TaosTables,
+    TaosSubTable,
     TaosConsole
   },
   computed: {

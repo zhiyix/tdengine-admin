@@ -153,13 +153,12 @@ const actions = {
   },
   // L531 showTables
   // SELECT * FROM ${TABLE_NAME}
-  show_tables({ commit, state }, params) {
+  show_sub_tables({ commit, state }, params) {
     commit('setLoadingTableList', true)
     //清理表列表
 
     // showTables
     taos_api.show_tables(params['connect_info'], params['db']).then(res => {
-      console.log(res)
       if (res.status) {
         commit('setTables', res.data)
         commit('setShowTableResponse', res)
@@ -204,31 +203,119 @@ const actions = {
   // L728
   // selectTData
   // SELECT * FROM ${TABLE_NAME}
-  select_table_data({ commit, state }, params) {
+  select_subtable_data({ commit, state }, params) {
     commit('setLoadingTable', true)
     // selectData
-    taos_api.select_sql(
+    taos_api.show_create_table(
       params['connect_info'],
       state.theDB,
       state.tableName,
-      params,
-    ).then(res =>{
-      commit('setLoadingTable', false)
-      if (res.status) {
-        if (res.data.length != 0) {
-          if (params['is_first']) {
-            commit('setTableLabelItems', Object.keys(res.data[0]))
+    ).then(res => {
+      if (res.status && res.data.length > 0) {
+        res.data.forEach(item => {
+          if (item["Table"] == state.tableName) {
+            commit('setSuperTableName', item["Super Table"])
           }
-          commit('setTableLabel', Object.keys(res.data[0]))
-          // commit('setTableFilterFields', Object.keys(res.data[0]))
-        } else {
-          commit('setTableLabel', [])
-        }
-        commit('setTableData', res.data)
-        commit('setTotalTable', res.count)
-        commit('setSelectTableDataResponse', res)
+        });
+        taos_api.select_sql(
+          params['connect_info'],
+          state.theDB,
+          state.tableName,
+          params,
+        ).then(res =>{
+          commit('setLoadingTable', false)
+          if (res.status) {
+            if (res.data.length != 0) {
+              if (params['is_first']) {
+                commit('setTableLabelItems', Object.keys(res.data[0]))
+              }
+              commit('setTableLabel', Object.keys(res.data[0]))
+              // commit('setTableFilterFields', Object.keys(res.data[0]))
+            } else {
+              commit('setTableLabel', [])
+            }
+            commit('setTableData', res.data)
+            commit('setTotalTable', res.count)
+            commit('setSelectTableDataResponse', res)
+          } else {
+            commit('setSelectTableDataResponse', res)
+          }
+        })
       } else {
-        commit('setSelectTableDataResponse', res)
+        console.error("[TAOX] select_subtable_data: ", res)
+      }
+    })
+  },
+  // L815
+  // dropTable
+  drop_super_table ({ commit, state }, params) {
+    commit('setLoadingSuperList', true)
+
+    taos_api.show_create_table(
+      params['connect_info'],
+      params['db'],
+      params['table_name']
+    ).then(res => {
+      if (res.status && res.data.length > 0) {
+        res.data.forEach(item => {
+          if (item["Table"] == params['table_name']) {
+            taos_api.updateDroppedSQL(item["Create Table"], params['table_name'])
+            // >> dropTable
+            taos_api.drop_super_table(
+              params['connect_info'], 
+              params['db'],
+              params['table_name']
+            ).then(res => {
+              console.log("-------------", res)
+              if (res.status) {
+                // commit('setTables', res.data)
+                if (params['cb']) {params['cb']()}
+                commit('setDropSuperTableResponse', res)
+                commit('setLoadingSuperList', false)
+              } else {
+                commit('setDropSuperTableResponse', res)
+                commit('setLoadingSuperList', false)
+              }
+            })
+            // << dropTable
+          }
+        });
+      }
+    })
+  },
+  // L859
+  // dropTable
+  drop_sub_table ({ commit, state }, params) {
+    commit('setLoadingTableList', true)
+
+    taos_api.show_create_table(
+      params['connect_info'],
+      params['db'],
+      params['table_name']
+    ).then(res => {
+      if (res.status && res.data.length > 0) {
+        res.data.forEach(item => {
+          if (item["Table"] == params['table_name']) {
+            taos_api.updateDroppedSQL(item["Create Table"], params['table_name'])
+            // >> dropTable
+            taos_api.drop_sub_table(
+              params['connect_info'], 
+              params['db'],
+              params['table_name']
+            ).then(res => {
+              if (res.status) {
+                // commit('setTables', res.data)
+                if (params['cb']) {params['cb']()}
+                commit('setDropTableResponse', res)
+                commit('setLoadingTableList', false)
+              } else {
+                commit('setDropTableResponse', res)
+                commit('setLoadingTableList', false)
+              }
+            })
+            // << dropTable
+          }
+        });
       }
     })
   },
@@ -312,6 +399,9 @@ const mutations = {
   setShowSuperTableResponse (state, status) {
     state.emitter.emit('setShowSuperTableResponse', status)
   },
+  setDropSuperTableResponse (state, status) {
+    state.emitter.emit('setDropSuperTableResponse', status)
+  },
   setSelectSuperTableDataResponse (state, status) {
     state.emitter.emit('setSelectSuperTableDataResponse', status)
   },
@@ -348,6 +438,9 @@ const mutations = {
   },
   setShowTableResponse (state, status) {
     state.emitter.emit('setShowTableResponse', status)
+  },
+  setDropTableResponse (state, status) {
+    state.emitter.emit('setDropTableResponse', status)
   },
   setSelectTableDataResponse (state, status) {
     state.emitter.emit('setSelectTableDataResponse', status)

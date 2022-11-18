@@ -1,9 +1,9 @@
 <template>
   <el-container class="panelWrapper">
-    <el-aside class="mainAside" width="200px" v-loading="loadingTableList">
+    <el-aside class="mainAside" width="251px" v-loading="loadingTableList">
       <!-- 表列表 -->
       <el-table size="mini" :data="tables" highlight-current-row @current-change="handleClickT" style="width: 100%">
-        <el-table-column label="表名" width="180">
+        <el-table-column label="表名" width="250">
           <template slot="header" slot-scope="scope">
             <span>表名</span>
             <div class="iconWrapper">
@@ -78,9 +78,9 @@
       </el-dialog>
       <!-- 表数据 -->
       <el-row class="surperTSearchRow">
-
-        <el-col :span="3" class="dataPackerLabel">时间范围: </el-col>
-        <el-col :span="13">
+        <el-col :span="6" style="padding-right: 20px"><el-tag style="width: 100%">{{superTableName}}</el-tag></el-col>
+        <el-col :span="2" class="dataPackerLabel">时间范围: </el-col>
+        <el-col :span="10">
           <div class="datePickerWrapper">
             <el-date-picker @change="selectTData(false, true)" style="width: 100%;" size="small"
               v-model="tableFilter.dateRange" value-format="yyyy-MM-dd HH:mm:ss" type="datetimerange"
@@ -96,11 +96,11 @@
               <el-button @click="searchTableText" slot="append" icon="el-icon-search" size="small" class="surperTSearchBtn"></el-button>
             </el-input>
           </el-col> -->
-        <el-col :span="4" class="freshDataBtn">
+        <el-col :span="3" class="freshDataBtn">
           <el-button @click="openTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件
           </el-button>
         </el-col>
-        <el-col :span="4" class="freshDataBtn">
+        <el-col :span="3" class="freshDataBtn">
           <el-button @click="selectTData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新
           </el-button>
         </el-col>
@@ -128,7 +128,7 @@
 import { mapGetters, mapState } from 'vuex'
 
 export default {
-  name: "TaosTables",
+  name: "TaosSubTable",
   computed: {
     ...mapState({
       loadingTableList: state => state.taos.loadingTableList,
@@ -138,6 +138,7 @@ export default {
       tableLabel: state => state.taos.tableLabel,
       tableLabelItems: state => state.taos.tableLabelItems,
       totalTable: state => state.taos.totalTable,
+      superTableName: state => state.taos.superTableName,
       theDB: state => state.taos.theDB, // 当前数据库
       theLink: state => state.taos.theLink, // 当前连接
       emitter: state => state.taos.emitter
@@ -216,7 +217,7 @@ export default {
       //清理表列表
       //清理选中的表和具体数据
       this.$store.dispatch('taos/clear_table')
-      this.$store.dispatch('taos/show_tables', {
+      this.$store.dispatch('taos/show_sub_tables', {
         "connect_info": {
           host: this.theLink.host,
           port: this.theLink.port,
@@ -266,7 +267,7 @@ export default {
       //   this.tableWhere = ""
       // }
 
-      this.$store.dispatch('taos/select_table_data', {
+      this.$store.dispatch('taos/select_subtable_data', {
         "connect_info": {
           host: this.theLink.host,
           port: this.theLink.port,
@@ -294,6 +295,30 @@ export default {
     paginationChange() {
       this.selectTData(false)
     },
+    // L859
+    deleteT(val) {
+      this.$confirm('确认删除表\`' + val + "\`吗？")
+      .then(_ => {
+        this.$store.dispatch('taos/drop_sub_table', {
+          "connect_info": {
+            host: this.theLink.host,
+            port: this.theLink.port,
+            user: this.theLink.user,
+            password: this.theLink.password
+          },
+          "db": this.theDB,
+          "table_name": val,
+          "cb": () => this.freshTables()
+        }) // dropTable()
+      })
+      .catch(_ => {
+        this.$message({
+          message: '操作已取消',
+          type: 'warning',
+          duration:500
+        });
+      });
+    },
     // L934
     closeTdialog() {
       this.TdialogText = ""
@@ -319,6 +344,26 @@ export default {
           //
         } else if(res.msg) {
           //连接失败
+          this.$message({
+            message: res.msg,
+            type: 'error',
+            duration: 3000
+          });
+        }
+      }
+    });
+    this.emitter.on("setDropTableResponse", (res) => {
+      console.log("[ConnList] setDropTableResponse: ", res)
+      if (res != undefined && res != null) {
+        if (res.status) {
+          // 删除表成功
+          this.$message({
+            message: '删除成功',
+            type: 'success',
+            duration: 1000
+          });
+        } else if(res.msg) {
+          //删除失败
           this.$message({
             message: res.msg,
             type: 'error',

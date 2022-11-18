@@ -47,7 +47,7 @@ export default {
         "SHOW CREATE DATABASE log;",
         "SHOW log.TABLES",
         "SHOW CREATE TABLE log.`log`;",
-        "SELECT COUNT(*) FROM log.`log`",
+        "SELECT COUNT(*) FROM log.`log`;",
         "SHOW VARIABLES;",
         "SHOW DNODES;",
         "SHOW MNODES;",

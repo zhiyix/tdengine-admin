@@ -63,6 +63,30 @@ export default {
   // L061
   // 添加数据库
   // createDatabase
+  show_create_table(connect_info, db_name, table_name) {
+    return this._send_request(`SHOW CREATE TABLE ${db_name}.\`${table_name}\``, connect_info).then(res => {
+      if (res.status) {
+        if (res.data && res.data.length > 0) {
+          res.data.forEach(item => {
+            if (item["Table"] == table_name) {
+              let sql = item['Create Table'].trim().replaceAll("`","")
+              let start = sql.indexOf("USING")
+              let end = sql.indexOf("TAGS")
+              if (start > 0 && end > 0 && start < end) {
+                item["Super Table"] = sql.substring(start+"USING".length,end).trim()
+              }
+            }
+          })
+        }
+        return res
+      } else {
+        return res
+      }
+    })
+  },
+  select_subtable_from_supertable(connect_info, db_name, stable_name) {
+    return this._send_request(`SELECT tbname FROM ${db_name}.\`${stable_name}\``, connect_info)
+  },
   // L113
   // dropDatabase
   // L116
@@ -84,6 +108,12 @@ export default {
   },
   // L127
   // dropTable
+   drop_sub_table(connect_info, db_name, table_name, safe=true){
+    return this._send_request(`DROP TABLE ${safe?'IF EXISTS':''} ${db_name}.\`${table_name}\``, connect_info )
+   },
+   drop_super_table(connect_info, db_name, table_name, safe=true){
+    return this._send_request(`DROP STABLE ${safe?'IF EXISTS':''} ${db_name}.\`${table_name}\``, connect_info )
+   },
   // L130
   // insertData
   // L141
@@ -218,7 +248,7 @@ export default {
     }
   },
   updateLinks(link) {
-    //连接成功，保存到本地
+    //保存到本地
     storage.addLink({
       name: link.name,
       host: link.host,
@@ -229,11 +259,19 @@ export default {
     })
   },
   updateSQLSuggestions(sql) {
-    //连接成功，保存到本地
+    //保存到本地
     sql = sql.trim()
     if (sql.endsWith(";")) {
       sql = sql.substring(0, sql.lastIndexOf(";"))
     }
     storage.addSQLSuggestion(sql)
+  },
+  updateDroppedSQL(sql, table_name) {
+    //保存到本地
+    sql = sql.trim()
+    if (sql.endsWith(";")) {
+      sql = sql.substring(0, sql.lastIndexOf(";"))
+    }
+    storage.addDroppedSQL(sql, table_name)
   },
 }

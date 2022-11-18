@@ -88,19 +88,9 @@ export default {
             "value": `${item['strict'] || ''}` 
           })
           info.push({ 
-            "name": "duration", 
-            "description": "单文件存储数据的时间跨度(v3)", 
-            "value": `${item['duration'] || ''}` 
-          })
-          info.push({ 
             "name": "keep", 
-            "description": "数据保留时长", 
+            "description": "数据保留的天数", 
             "value": `${item['keep']}` 
-          })
-          info.push({ 
-            "name": "buffer", 
-            "description": "写缓存的内存块大小(v3)", 
-            "value": `${item['buffer'] || ''}` 
           })
           info.push({ 
             "name": "pagesize", 
@@ -154,13 +144,13 @@ export default {
           })
           info.push({ 
             "name": "wal_level", 
-            "description": "WAL 级别", 
+            "description": "WAL(Write Ahead Log) 级别", 
             "value": `${item['wallevel'] || item['wal_level'] || ''}` 
           })
           info.push({ 
             "name": "wal_fsync_period", 
-            "description": "数据落盘周期(v3)", 
-            "value": `${item['wal_fsync_period'] || ''}` 
+            "description": "数据落盘周期", 
+            "value": `${item['fsync'] || item['wal_fsync_period'] || ''}` 
           })
           info.push({ 
             "name": "wal_retention_period", 
@@ -199,39 +189,56 @@ export default {
           })
           info.push({ 
             "name": "update", 
-            "description": "可更新", 
+            "description": "允许更新数据", 
             "value": `${item['update'] == 0 ? '否' : '是'}` 
           })
-          info.push({ 
-            "name": "blocks", 
-            "description": "v2", 
-            "value": `${item['blocks'] || ''}` 
-          })
-          info.push({ 
-            "name": "cache(MB)", 
-            "description": "v2", 
-            "value": `${item['cache(MB)'] || ''}` 
-          })
+
+          if (item['buffer'] != undefined) {
+            info.push({ 
+              "name": "buffer", 
+              "description": "写缓存的内存块大小(v3)", 
+              "value": `${item['buffer'] || ''}` 
+            })
+          } else {
+            info.push({ 
+              "name": "blocks", 
+              "description": "内存块数(v2)", 
+              "value": `${item['blocks'] || ''}` 
+            })
+            info.push({ 
+              "name": "cache(MB)", 
+              "description": "内存块的大小(v2)", 
+              "value": `${item['cache(MB)'] || ''}` 
+            })
+          }
+
           info.push({ 
             "name": "cachelast", 
-            "description": "v2", 
+            "description": "是否在内存中缓存子表的最近数据(v2)", 
             "value": `${item['cachelast'] || ''}` 
           })
-          info.push({ 
-            "name": "days", 
-            "description": "v2", 
-            "value": `${item['days'] || ''}` 
-          })
-          info.push({ 
-            "name": "fsync", 
-            "description": "v2", 
-            "value": `${item['fsync'] || ''}` 
-          })
-          info.push({ 
-            "name": "quorum", 
-            "description": "v2", 
-            "value": `${item['quorum'] || ''}` 
-          })
+
+          if (item['duration'] != undefined) {
+            info.push({ 
+              "name": "duration", 
+              "description": "单文件存储数据的时间跨度(v3)", 
+              "value": `${item['duration'] || ''}` 
+            })
+          } else {
+            info.push({ 
+              "name": "days", 
+              "description": "数据文件存储数据的时间跨度,天(v2)", 
+              "value": `${item['days'] || ''}` 
+            })
+          }
+
+          if (item['quorum'] != undefined) {
+            info.push({ 
+              "name": "quorum", 
+              "description": "数据写入成功所需要的确认数(v2)", 
+              "value": `${item['quorum'] || ''}` 
+            })
+          }
         }
       })
       return info

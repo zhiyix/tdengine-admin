@@ -1,10 +1,10 @@
 <template>
   <el-container class="panelWrapper">
-    <el-aside class="mainAside" width="200px" v-loading="loadingSuperList">
+    <el-aside class="mainAside" width="251px" v-loading="loadingSuperList">
       <!-- 超级表列表 -->
       <el-table size="mini" highlight-current-row @current-change="handleClickSuperT" :data="superTables"
         style="width: 100%">
-        <el-table-column label="超级表名" width="180">
+        <el-table-column label="超级表名" width="250">
           <template slot="header" slot-scope="scope">
             <span>超级表名</span>
             <div class="iconWrapper">
@@ -252,6 +252,30 @@ export default {
     paginationSuperChange() {
       this.selectSuperData(false)
     },
+    // L815
+    deleteSuperT(val) {
+      this.$confirm('确认删除超级表\`' + val + "\`吗？")
+      .then(_ => {
+        this.$store.dispatch('taos/drop_super_table', {
+          "connect_info": {
+            host: this.theLink.host,
+            port: this.theLink.port,
+            user: this.theLink.user,
+            password: this.theLink.password
+          },
+          "db": this.theDB,
+          "table_name": val,
+          "cb": () => this.freshSuperTables()
+        }) // dropTable()
+      })
+      .catch(_ => {
+        this.$message({
+          message: '操作已取消',
+          type: 'warning',
+          duration:500
+        });
+      });
+    },
     // L938
     STChooseAll() {
       this.superTableFilter.fields = this.superTableLabelItems
@@ -286,6 +310,26 @@ export default {
           }
         } else if(res.msg) {
           // 拉取失败
+          this.$message({
+            message: res.msg,
+            type: 'error',
+            duration: 3000
+          });
+        }
+      }
+    });
+    this.emitter.on("setDropSuperTableResponse", (res) => {
+      console.log("[ConnList] setDropSuperTableResponse: ", res)
+      if (res != undefined && res != null) {
+        if (res.status) {
+          // 删除表成功
+          this.$message({
+            message: '删除成功',
+            type: 'success',
+            duration: 1000
+          });
+        } else if(res.msg) {
+          //删除失败
           this.$message({
             message: res.msg,
             type: 'error',

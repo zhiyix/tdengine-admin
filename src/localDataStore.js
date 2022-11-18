@@ -53,4 +53,27 @@ module.exports = {
     this.setSQLSuggestions(suggestions)
     return suggestions
   },
+  // ---------------------------------------------------------------------
+  getDroppedSQLs() {
+    let sqls = localStorage.getItem('sql-dropped');
+    sqls = sqls? JSON.parse(sqls) : [];
+    return sqls
+  },
+  setDroppedSQLs(sqls) {
+    sqls = JSON.stringify(sqls); //将json数据转换为字符串存储
+    localStorage.setItem('sql-dropped', sqls);
+  },
+  addDroppedSQL(sql, table_name) {
+    //添加一个连接，如果本地就存了，更新，没存新增
+    let sqls = this.getDroppedSQLs()
+    for (let i = 0; i < sqls.length; i++) {
+      if (table_name == sqls[i].name) {
+        return sqls
+      }
+    }
+    //新增
+    sqls.push({"sql": sql, "name": table_name})     
+    this.setDroppedSQLs(sqls)
+    return sqls
+  },
 }
