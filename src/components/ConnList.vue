@@ -18,8 +18,8 @@
                 <img @click.stop="deleteLink(index, link.name)" class="icon1" src="@/assets/img/delete.png">
               </div>
             </template>
-            <el-menu-item :index="db.name" class="menuitem" @click="alartDB(link, db.name)" :key="db.name"
-              v-for="(db, index_) in link.dbs">
+            <el-menu-item class="menuitem" :index="db.name" :key="db.name" v-for="(db, index_) in link.dbs"
+              @click="alartDB(link, db.name)" >
               <img class="icon11" src="@/assets/img/database.png">
               {{ db.name }}
               <img class="icon111" @click.stop="deleteDB(link, db.name, index)" src="@/assets/img/delete.png">
@@ -67,9 +67,8 @@ export default {
   mixins: [taos_mixin],
   computed: {
     ...mapState({
-      links: state => state.taos.links,
-      theDB: state => state.taos.theDB,
-      emitter: state => state.taos.emitter
+      theDB: state => state.taos_tree.theDB,
+      emitter: state => state.taos_tree.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',
@@ -89,6 +88,7 @@ export default {
         password: "taosdata",
       },
       activeTab: "1",             // 37
+      links: [], // 96
     }
   },
   methods: {
@@ -98,7 +98,7 @@ export default {
         this.drawer = false
       } else {
         this.$message({
-          message: '请选择数据库',
+          message: '请选择连接',
           type: 'warning',
           duration: 1000
         });
@@ -108,91 +108,58 @@ export default {
     cancelAddLink() {
       this.addLinkDialog = false
       //清空表单
-      this.linkForm = {
+      /*this.linkForm = {
         name: "",
         host: "",
         port: "",
         user: "",
         password: ""
-      }
+      }*/
     },
     // L138
-    confirmAddLink(event) {
-      let connect_info = {
+    async confirmAddLink(event) {
+      const connect_info = {
         name: this.linkForm.name,
         host: this.linkForm.host,
         port: this.linkForm.port,
         user: this.linkForm.user,
         password: this.linkForm.password
       }
-      this.$store.dispatch('taos/connect', connect_info)
+      const res = await this.$store.dispatch('taos_tree/connect', connect_info)
+      if (res.status) {
+        //关闭新建连接的弹窗
+        this.addLinkDialog = false
+        //清空表单
+        /*this.linkForm = {
+          name: "",
+          host: "",
+          port: "",
+          user: "",
+          password: "",
+        }*/
+      } else if(res.msg) {
+        //连接失败
+        this.$message({
+          message: res.msg,
+          type: 'error',
+          duration: 3000
+        });
+      }
     },
     // L208
     freshDB(key) {
-      let _link = this.links[key]
-      let connect_info = {
+      const _link = this.links[key]
+      const connect_info = {
         host: _link.host,
         port: _link.port,
         user: _link.user,
         password: _link.password,
-        database_key: key,
       }
       this.loadingLinks = true
-      this.$store.dispatch('taos/show_databases', connect_info)
-    },
-    // L381
-    alartDB(link, db_name) {
-      //切换数据库前先清空表
-      this.$store.dispatch('taos/change_db_info', 
-        this.make_db_info({"name": db_name, "info": link.dbs, "version": link.version})
-      ) // dbInfo
-      this.$store.dispatch('taos/clear_super_table')
-      this.$store.dispatch('taos/clear_table')
-
-      //更新超级表页
-      this.drawer = false
-      this.activeTab = "1"
-      this.$store.dispatch('taos/show_super_tables', {
-        "connect_info": {
-          host: link.host,
-          port: link.port,
-          user: link.user,
-          password: link.password
-        },
-        "db": db_name
-      }) // freshSurperTables()
-    },
-  },
-  mounted() {
-    this.emitter.on("setConnectResponse", (res) => {
-      console.log("[ConnList] setConnectResponse: ", res)
-      if (res != undefined && res != null) {
+      this.$store.dispatch('taos_tree/show_databases', connect_info).then(res => {
+        this.loadingLinks = false
         if (res.status) {
-          //关闭新建连接的弹窗
-          this.addLinkDialog = false
-          //清空表单
-          /*this.linkForm = {
-            name: "",
-            host: "",
-            port: "",
-            user: "",
-            password: "",
-          }*/
-        } else if(res.msg) {
-          //连接失败
-          this.$message({
-            message: res.msg,
-            type: 'error',
-            duration: 3000
-          });
-        }
-      }
-    });
-    this.emitter.on("setShowDatabaseResponse", (res) => {
-      console.log("[ConnList] setShowDatabaseResponse: ", res)
-      this.loadingLinks = false
-      if (res != undefined && res != null) {
-        if (res.status) {
+          this.links[key].dbs = res.data
           this.$message({
             message: '数据库刷新成功',
             type: 'success',
@@ -209,32 +176,22 @@ export default {
           // 2
           // 3
         }
-      }
-    });
-    this.emitter.on("setShowSuperTableResponse", (res) => {
-      console.log("[ConnList] setShowSuperTableResponse: ", res)
-      if (res != undefined && res != null) {
-        if (res.status) {
-          // 拉取超级表成功
-          this.$message({
-            message: '超级表刷新成功',
-            type: 'success',
-            duration: 1000
-          });
-        } else if(res.msg) {
-          // 拉取失败
-          this.$message({
-            message: res.msg,
-            type: 'error',
-            duration: 3000
-          });
-        }
-      }
-    });
-    this.emitter.on("setTaosLinks", (links) => {
-      console.log("[ConnList]", links)
-    });
-    this.$store.dispatch('taos/init_links');
+      })
+    },
+    // L381
+    alartDB(link, db_name) {
+      //切换数据库前先清空表
+      this.$store.dispatch('taos_tree/change_link_and_db', [link, db_name]) 
+
+      //更新超级表页
+      this.drawer = false
+    },
+  },
+  async mounted() {
+    this.emitter.on("setErrorResponse", (err) => {
+      this.ui_show_error_message(err)
+    })
+    this.links = await this.$store.dispatch('taos_tree/init_links')
   }
 }
 </script>

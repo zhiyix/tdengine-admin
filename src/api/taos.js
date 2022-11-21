@@ -46,43 +46,41 @@ export default {
   show_databases(connect_info) {
     return this._send_request('SHOW DATABASES', connect_info)
   },
-  connect(connect_info) {
-    return this.show_databases(connect_info)
+  async connect(connect_info) {
+    return await this.show_databases(connect_info)
   },
   // L048
-  select_version(connect_info) {
-    return this._send_request('SELECT SERVER_VERSION()', connect_info).then(res => {
-      //处理返回的数据库数据
-      if (res.status) {
-        return { 'status': true, 'version': res.data[0]['server_version()'] }
-      } else {
-        return { 'status': false, 'version': 'unkown' }
-      }
-    })
+  async select_version(connect_info) {
+    const res = await this._send_request('SELECT SERVER_VERSION()', connect_info)
+    
+    //处理返回的数据库数据
+    if (res.status) {
+      return { 'status': true, 'version': res.data[0]['server_version()'] }
+    } else {
+      return { 'status': false, 'version': 'unkown' }
+    }
   },
   // L061
   // 添加数据库
   // createDatabase
-  show_create_table(connect_info, db_name, table_name) {
-    return this._send_request(`SHOW CREATE TABLE ${db_name}.\`${table_name}\``, connect_info).then(res => {
-      if (res.status) {
-        if (res.data && res.data.length > 0) {
-          res.data.forEach(item => {
-            if (item["Table"] == table_name) {
-              let sql = item['Create Table'].trim().replaceAll("`","")
-              let start = sql.indexOf("USING")
-              let end = sql.indexOf("TAGS")
-              if (start > 0 && end > 0 && start < end) {
-                item["Super Table"] = sql.substring(start+"USING".length,end).trim()
-              }
-            }
-          })
-        }
-        return res
-      } else {
-        return res
+  async show_create_table(connect_info, db_name, table_name) {
+    const res = await this._send_request(`SHOW CREATE TABLE ${db_name}.\`${table_name}\``, connect_info)
+    
+    if (res.status) {
+      if (res.data && res.data.length > 0) {
+        res.data.forEach(item => {
+          const sql = item['Create Table'].trim().replaceAll("`","")
+          const start = sql.indexOf("USING")
+          const end = sql.indexOf("TAGS")
+          if (start > 0 && end > 0 && start < end) {
+            item["Super Table"] = sql.substring(start+"USING".length,end).trim()
+          }
+        })
       }
-    })
+      return res
+    } else {
+      return res
+    }
   },
   select_subtable_from_supertable(connect_info, db_name, stable_name) {
     return this._send_request(`SELECT tbname FROM ${db_name}.\`${stable_name}\``, connect_info)
@@ -108,11 +106,11 @@ export default {
   },
   // L127
   // dropTable
-   drop_sub_table(connect_info, db_name, table_name, safe=true){
-    return this._send_request(`DROP TABLE ${safe?'IF EXISTS':''} ${db_name}.\`${table_name}\``, connect_info )
+   async drop_sub_table(connect_info, db_name, table_name, safe=true){
+    return await this._send_request(`DROP TABLE ${safe?'IF EXISTS':''} ${db_name}.\`${table_name}\``, connect_info )
    },
-   drop_super_table(connect_info, db_name, table_name, safe=true){
-    return this._send_request(`DROP STABLE ${safe?'IF EXISTS':''} ${db_name}.\`${table_name}\``, connect_info )
+   async drop_super_table(connect_info, db_name, table_name, safe=true){
+    return await this._send_request(`DROP STABLE ${safe?'IF EXISTS':''} ${db_name}.\`${table_name}\``, connect_info )
    },
   // L130
   // insertData
@@ -187,7 +185,6 @@ export default {
 
       if (limit != null) {
         return this._send_request(s_sql, connect_info).then(res => {
-          // console.log(res)
           return this.select_count(connect_info, db_name, table_name, primary_key, where/*, start_time, end_time*/).then(count => {
             res.count = count
             return new Promise((resolve, reject) => { resolve(res) })
@@ -221,30 +218,36 @@ export default {
   // rawSql
   // L233
   // rawSqlWithDB
-  exec_raw_sql(connect_info, db_name, s_sql){
+  async exec_raw_sql(connect_info, db_name, s_sql){
     // let dbN = dbName ? dbName : this.database
-    return this._send_request(`USE ${db_name}`, connect_info).then(a =>{
-      return this._send_request(s_sql, connect_info)
-    })
+    await this._send_request(`USE ${db_name}`, connect_info)
+    return await this._send_request(s_sql, connect_info)
   },
   // -----------------------------------------------------------------------
   getLinks() {
     return storage.getLinks()
   },
-  getLinksAndVersion(cb) {
+  async getLinksAndVersion() {
     let links = storage.getLinks()
+    const requests = []
     for (let i = 0, len = links.length; i < len; i++) {
-      this.select_version({
+      requests.push(this.select_version({
         host: links[i].host,
         port: links[i].port,
         user: links[i].user,
         password: links[i].password
-      }).then(res => {
-        if (res.status) {
-          links[i].version = res.version
-          cb(links)
+      }));
+    }
+    try {
+      const responses = await Promise.all(requests)
+      for (let j = 0; j < responses.length; j ++) {
+        if (responses[j].status) {
+          links[j].version = responses[j].version
         }
-      })
+      }
+      return links
+    } catch (error) {
+      // request failed
     }
   },
   updateLinks(link) {

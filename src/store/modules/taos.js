@@ -40,6 +40,7 @@ const state = () => ({
   theLink:              {}, // L97 当前连接
   theDB:                "", // L98 当前数据库
   connect_info:         [],
+  tree_data: [],
   emitter: mitt()
 })
 
@@ -48,8 +49,8 @@ const getters = {}
 
 // actions
 const actions = {
-  init_links ({ commit }) {
-    taos_api.getLinksAndVersion(links => {
+  async init_links ({ commit }) {
+    await taos_api.getLinksAndVersion(links => {
       commit('setTaosLinks', links)
     })
   },

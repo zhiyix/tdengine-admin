@@ -3,27 +3,7 @@
     <ConnList ref="superTable" />
     <el-container class="main">
       <el-container class="mainContent">
-        <el-tabs v-model="activeTab" type="border-card" class="mainTab" @tab-click="handleSwichTab">
-          <el-tab-pane label="超级表" class="tablePage" name="1">
-            <TaosSuperTable ref="super_table_ref" />
-          </el-tab-pane>
-          <el-tab-pane label="表" class="tablePage" name="2">
-            <TaosSubTable ref="table_ref" />
-          </el-tab-pane>
-          <el-tab-pane label="控制台" name="3">
-            <TaosConsole ref="console_ref" />
-          </el-tab-pane>
-          <el-tab-pane label="当前数据库属性" name="4">
-            <el-table :data="dbInfo" border style="width: 100%">
-              <el-table-column prop="name" label="列名" width="180">
-              </el-table-column>
-              <el-table-column prop="value" label="数据" width="240">
-              </el-table-column>
-              <el-table-column prop="description" label="说明">
-              </el-table-column>
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
+        <TaosTableTree ref="tree_ref" />
       </el-container>
       <el-footer>
         <el-button class="switchBtn" @click="drawer = true" type="text" size="small">
@@ -54,58 +34,24 @@
 import { mapGetters, mapState } from 'vuex'
 import { currency } from './currency'
 import ConnList from './components/ConnList.vue'
-import TaosSuperTable from './components/TaosSuperTable.vue'
-import TaosSubTable from './components/TaosSubTable.vue'
-import TaosConsole from './components/TaosConsole.vue'
+import TaosTableTree from './components/TaosTableTree'
 
 export default {
   name: 'App',
   components: {
     ConnList,
-    TaosSuperTable,
-    TaosSubTable,
-    TaosConsole
+    TaosTableTree
   },
   computed: {
     ...mapState({
-      dbInfo: state => state.taos.dbInfo,
-      theDB: state => state.taos.theDB, // 当前数据库
-      theLink: state => state.taos.theLink, // 当前连接
-      emitter: state => state.taos.emitter
+      theDB: state => state.taos_tree.theDB, // 当前数据库
+      theLink: state => state.taos_tree.theLink, // 当前连接
+      emitter: state => state.taos_tree.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',
       total: 'cartTotalPrice'
     })
-  },
-  data: function () {
-    return {
-      activeTab: "1", // L37
-    }
-  },
-  methods: {
-    currency,
-    // L563
-    handleSwichTab(tab) {
-      switch (tab.name) {
-        case "1":
-          //超级表
-          this.$refs.super_table_ref.freshSuperTables()
-          break;
-        case "2":
-          //表
-          this.$refs.table_ref.freshTables()
-          break;
-        case "3":
-          //控制台
-          break;
-        case "4":
-          //数据库属性
-          break;
-      }
-    },
-  },
-  mounted() {
   }
 }
 </script>

@@ -52,8 +52,7 @@ div {
 
 /* L054 */
 .el-main {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding: 0 !important;
 }
 
 /* L077 */
@@ -93,3 +92,6 @@ div {
 .el-table__body-wrapper {
   height: 100% !important;
 }*/
+.el-tree-node__label {
+  font-size: 12px !important;
+}

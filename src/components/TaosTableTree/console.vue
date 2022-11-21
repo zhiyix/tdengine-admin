@@ -17,26 +17,38 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import JsonViewer from 'vue-json-viewer'
-const storage = require('../localDataStore.js')
+const storage = require('@/localDataStore.js')
 
-import taos_mixin from '../mixins/taos'
+import taos_mixin from '../../mixins/taos'
 
 export default {
-  name: "TaosConsole",
+  name: "TaosConsoles",
   components: {
     JsonViewer
   },
   mixins: [taos_mixin],
+  props: {
+    db: Object,
+  },
   computed: {
     ...mapState({
-      theDB: state => state.taos.theDB, // 当前数据库
-      theLink: state => state.taos.theLink, // 当前连接
-      emitter: state => state.taos.emitter
+      theLink: state => state.taos_tree.theLink, // 当前连接
+      emitter: state => state.taos_tree.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',
       total: 'cartTotalPrice'
     })
+  },
+  watch: {
+    theLink(val) {
+      this.connect_info = {
+        host: val.host,
+        port: val.port,
+        user: val.user,
+        password: val.password,
+      }
+    },
   },
   data: function () {
     return {
@@ -59,23 +71,32 @@ export default {
   },
   methods: {
     // L900
-    sendSQL() {
-      this.$store.dispatch('taos/exec_raw_sql', {
-        "connect_info": {
-          host: this.theLink.host,
-          port: this.theLink.port,
-          user: this.theLink.user,
-          password: this.theLink.password
-        },
+    async sendSQL() {
+      // rawSqlWithDB()
+      const res = await this.$store.dispatch('taos_tree/exec_raw_sql', {
+        "connect_info": this.connect_info,
+        "db_name": this.db,
         "sql": this.consoleInput,
-      }) // rawSqlWithDB()
+      })
+      if (res.status) {
+        // let info = ''
+        // info += `数据数量:&nbsp;&nbsp;${data.count}<br/>`
+        // info += `数据列:&nbsp;&nbsp;${data.head}<br/>`
+        // info += `数据:&nbsp;&nbsp;${data.data}<br/>`
+        this.$message({
+          message: '执行成功',
+          type: 'success',
+          duration: 500
+        });
+        this.consoleResult = res.data
+      } 
     },
     querySuggestionsAsync(queryString, cb) {
       var suggestions = this.uq(
         storage.getSQLSuggestions().map(s => s.value), 
         this.sqlTemplates
       )
-      suggestions = suggestions.forEach(function(item, index, array){
+      suggestions = suggestions.map(function(item, index, array){
         return {"value": item}
       })
       var results = queryString ? suggestions.filter(this.createSuggestionFilter(queryString)) : suggestions;
@@ -91,35 +112,11 @@ export default {
         return (suggestion.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
       };
     },
-    handleSelect(item) {
-      console.log(item);
-    }
   },
   mounted() {
-    this.emitter.on("setExecRawSQLResponse", (res) => {
-      console.log("[ConnList] setExecRawSQLResponse: ", res)
-      if (res != undefined && res != null) {
-        if (res.status) {
-          // let info = ''
-          // info += `数据数量:&nbsp;&nbsp;${data.count}<br/>`
-          // info += `数据列:&nbsp;&nbsp;${data.head}<br/>`
-          // info += `数据:&nbsp;&nbsp;${data.data}<br/>`
-          this.$message({
-            message: '执行成功',
-            type: 'success',
-            duration: 500
-          });
-          this.consoleResult = res.data
-        } else if(res.msg) {
-          //连接失败
-          this.$message({
-            message: res.msg,
-            type: 'error',
-            duration: 3000
-          });
-        }
-      }
-    });
+    this.emitter.on("setErrorResponse", (err) => {
+      this.ui_show_error_message(err)
+    })
   }
 }
 </script>
