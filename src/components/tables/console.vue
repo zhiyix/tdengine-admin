@@ -32,8 +32,8 @@ export default {
   },
   computed: {
     ...mapState({
-      theLink: state => state.taos_tree.theLink, // 当前连接
-      emitter: state => state.taos_tree.emitter
+      theLink: state => state.taos_connections.theLink, // 当前连接
+      emitter: state => state.taos_connections.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',
@@ -63,7 +63,7 @@ export default {
         "SHOW VARIABLES;",
         "SHOW DNODES;",
         "SHOW MNODES;",
-        "SHOW CONNECTIONS;",
+        "SHOW ServerConnections;",
         "SHOW FUNCTIONS;",
         "SHOW USERS;",
       ]

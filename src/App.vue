@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <ConnList ref="superTable" />
+    <ServerConnections ref="superTable" />
     <el-container class="main">
       <el-container class="mainContent">
-        <TaosTableTree ref="tree_ref" />
+        <TaosMain />
       </el-container>
       <el-footer>
         <el-button class="switchBtn" @click="drawer = true" type="text" size="small">
@@ -33,14 +33,14 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import { currency } from './currency'
-import ConnList from './components/ConnList.vue'
-import TaosTableTree from './components/TaosTableTree'
+import ServerConnections from './components/connections/ServerConnections.vue'
+import TaosMain from './components/TaosMain'
 
 export default {
   name: 'App',
   components: {
-    ConnList,
-    TaosTableTree
+    ServerConnections,
+    TaosMain
   },
   computed: {
     ...mapState({

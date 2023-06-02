@@ -103,9 +103,9 @@ export default {
   },
   computed: {
     ...mapState({
-      theDB: state => state.taos_tree.theDB, // 当前数据库
-      theLink: state => state.taos_tree.theLink, // 当前连接
-      emitter: state => state.taos_tree.emitter
+      theDB: state => state.taos_connections.theDB, // 当前数据库
+      theLink: state => state.taos_connections.theLink, // 当前连接
+      emitter: state => state.taos_connections.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',

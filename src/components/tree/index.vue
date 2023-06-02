@@ -1,16 +1,15 @@
 <template>
-  <el-container class="panelWrapper">
-    <el-aside class="sideWrapper" width="251px" v-loading="uiLoadingTree">
+  <div class="treeWrapper" v-loading="uiLoadingTree">
       <!-- 表列表 -->
       <el-input placeholder="输入关键字进行过滤" v-model="filterText">
       </el-input>
       <el-tree class="filter-tree" lazy :data="uiTreeData" :props="defaultProps" node-key="name"
-        default-expand-all :expand-on-click-node="false" :filter-node-method="filter_tree_node" 
-        :load="load_tree_node" @node-click="on_tree_node_click" ref="tree">
+        default-expand-all :expand-on-click-node="false" :filter-node-method="onTreeNodeFilter" 
+        :load="onTreeNodeLoad" @node-click="onTreeNodeClicked" ref="tree">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>{{ node.label }}</span>
           <span class="iconWrapper2">
-            <i class="el-icon-delete" @click.stop="remove_tree_node(node, data)" v-if="node.level>1"></i>
+            <i class="el-icon-delete" @click.stop="removeTreeNode(node, data)" v-if="node.level>1"></i>
           </span>
         </span>
       </el-tree>
@@ -23,63 +22,34 @@
           <el-button size="small" type="primary" @click="searchTList">确 定</el-button>
         </span>
       </el-dialog>
-    </el-aside>
-    <el-main class="mainWrapper">
-      <el-tabs v-model="uiActiveTab" type="border-card" class="mainTab" @tab-click="handle_swich_tab">
-        <el-tab-pane label="表" class="tablePage" name="1">
-          <taos-tables :super="uiIsSuperTable" :db="uiSelectDatabaseData" 
-            :stable="uiSelectSuperTable" :table="uiSelectSubTable"/>
-        </el-tab-pane>
-        <el-tab-pane label="控制台" name="3">
-          <taos-consoles :db="uiSelectDatabaseData" />
-        </el-tab-pane>
-        <el-tab-pane label="测试" name="4">
-          <taos-test :db="uiSelectDatabaseData" ref="test"/>
-        </el-tab-pane>
-        <el-tab-pane label="当前数据库属性" name="5">
-          <taos-properties :db="uiSelectDatabaseData" />
-        </el-tab-pane>
-      </el-tabs>
-    </el-main>
-  </el-container>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import TaosProperties from './properties.vue'
-import TaosConsoles from './console.vue'
-import TaosTest from './test.vue'
-import TaosTables from './tables.vue'
+const storage = require('../../localDataStore.js')
 
 import taos_mixin from '../../mixins/taos'
 
 export default {
-  name: "TaosTableTree",
+  name: "TaosTree",
   mixins: [taos_mixin],
-  components: {
-    TaosTables,
-    TaosConsoles,
-    TaosTest,
-    TaosProperties
+  props: {
+    connection: Object
   },
   computed: {
     ...mapState({
-      // theDB: state => state.taos_tree.theDB, // 当前数据库
-      theLink: state => state.taos_tree.theLink, // 当前连接
-      emitter: state => state.taos_tree.emitter
+      // theDB: state => state.taos.theDB, // 当前数据库
+      theLink: state => state.taos.theLink, // 当前连接
+      emitter: state => state.taos.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',
       total: 'cartTotalPrice'
-    }),
-    fullName: function () {
-      return this.TdialogText + ' ' + this.filterText
-    }
+    })
   },
-  data() {
+  data: function () {
     return {
-      Tdialog: false, // L102
-      TdialogText: "", // L103
       filterText: '',
       defaultProps: {
         id: 'name',
@@ -89,22 +59,17 @@ export default {
       },
       rawDatabaseData: [], // SQL Return Data
       rawTableData: [], // SQL Return Data
-      selectDatabaseName: null,
-      uiIsSuperTable: false,
-      uiSelectDatabaseData: null,
-      uiSelectSuperTable: null,
-      uiSelectSubTable: null,
       uiLoadingTree: false,
       uiTreeData: [],
-      uiActiveTab: "1", // L37
-      uiLatestTab: null,
-    };
+      Tdialog: false,  // L102
+      TdialogText: "", // L103
+    }
   },
   watch: {
     filterText(val) {
       this.$refs.tree.filter(val);
     },
-    theLink(val) {
+    connection(val) {
       this.connect_info = {
         host: val.host,
         port: val.port,
@@ -119,18 +84,6 @@ export default {
     }
   },
   methods: {
-    change_curr_database(data) {
-      this.uiSelectDatabaseData = data
-    },
-    change_sub_table_data(data) {
-      this.rawTableData = []
-      data.forEach(e => {
-        if (!e.stable_name || e.stable_name === "") {
-          e.stable_name = "()"
-        }
-        this.rawTableData.push(e)
-      })
-    },
     // L436
     searchTList() {
     },
@@ -139,29 +92,7 @@ export default {
       this.TdialogText = ""
       this.Tdialog = false
     },
-    handle_swich_tab(tab) {
-      switch (tab.name) {
-        case "1":
-          //超级表
-          break;
-        case "2":
-          //表
-          break;
-        case "tree":
-          break;
-        case "3":
-          //控制台
-          break;
-        case "4":
-          //Test
-          this.$nextTick(() => this.$refs.test.start())
-          break;
-        case "5":
-          //数据库属性
-          break;
-      }
-    },
-    load_tree_node(node, resolve) {
+    onTreeNodeLoad(node, resolve) {
       // Database
       if (node.level === 0) {
         return resolve(this.rawDatabaseData);
@@ -185,18 +116,11 @@ export default {
       }
       if (node.level > 2) return resolve([]);
     },
-    filter_tree_node(value, data) {
+    onTreeNodeFilter(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
-    append_tree_node(data) {
-      const newChild = { id: id++, label: 'testtest', children: [] };
-      if (!data.children) {
-        this.$set(data, 'children', []);
-      }
-      data.children.push(newChild);
-    },
-    async remove_tree_node(node, data) {
+    async removeTreeNode(node, data) {
       console.log(node, data, "*******************************************************")
       const parent = node.parent
       if (node.level === 1) {
@@ -237,30 +161,48 @@ export default {
         }
       }
     },
-    on_tree_node_click(data, node) {
+    onTreeNodeClicked(data, node) {
       if (node.level === 1) {
         this.uiSelectDatabaseData = data
+        this.$emit("select", node.level, 
+        this.uiSelectDatabaseData, false, null, null
+        )
       } else if (node.level === 2) {
         this.uiSelectSubTable = null
         this.uiIsSuperTable = true
         this.uiSelectSuperTable = data
         // Database
         this.uiSelectDatabaseData = node.parent && node.parent.data
+        this.$emit("select", node.level, 
+        this.uiSelectDatabaseData, true, data, null
+        )
       } else if (node.level === 3) {
         this.uiSelectSubTable = data
         this.uiIsSuperTable = false
         this.uiSelectSuperTable = node.parent && node.parent.data
         // Database
         this.uiSelectDatabaseData = node.parent && node.parent.parent && node.parent.parent.data
+        this.$emit("select", node.level, 
+        this.uiSelectDatabaseData, false, this.uiSelectSuperTable, data
+        )
       }
     },
     init_tree_data() {
       this.uiLoadingTree = true
-      this.$store.dispatch('taos_tree/show_databases', this.connect_info).then(res => {
+      this.$store.dispatch('taos_connections/select_databases', this.connect_info).then(res => {
         if (res.status) {
           this.rawDatabaseData = res.data
         }
         this.uiLoadingTree = false
+      })
+    },
+    change_sub_table_data(data) {
+      this.rawTableData = []
+      data.forEach(e => {
+        if (!e.stable_name || e.stable_name === "") {
+          e.stable_name = "()"
+        }
+        this.rawTableData.push(e)
       })
     },
     show_sub_tables(stable_name) {
@@ -285,32 +227,16 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.panelWrapper {
+.treeWrapper {
   height: 100%;
+  width: 100%;
 
-  .sideWrapper {
-    font-size: 12px;
-
-    .iconWrapper2 {
-      display: inline;
-      position: absolute;
-      right: 14px;
-      height: 100%;
-    }
+  .iconWrapper2 {
+    display: inline;
+    position: absolute;
+    right: 14px;
+    height: 100%;
   }
 
-  .mainWrapper {
-    .mainTab {
-
-      width: 100%;
-      border: none;
-      box-shadow: none;
-
-      .tablePage {
-        // height: 90%;
-        height: calc(100vh - 110px);
-      }
-    }
-  }
 }
 </style>

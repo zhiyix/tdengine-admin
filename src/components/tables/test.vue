@@ -28,8 +28,8 @@ export default {
   },
   computed: {
     ...mapState({
-      theLink: state => state.taos_tree.theLink, // 当前连接
-      emitter: state => state.taos_tree.emitter
+      theLink: state => state.taos_connections.theLink, // 当前连接
+      emitter: state => state.taos_connections.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',

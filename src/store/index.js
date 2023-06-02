@@ -4,6 +4,7 @@ import cart from './modules/cart'
 import products from './modules/products'
 import taos from './modules/taos'
 import taos_tree from './modules/taos_tree'
+import taos_connections from './modules/connections/taos_connections'
 import {createLogger} from 'vuex'
 
 Vue.use(Vuex)
@@ -15,7 +16,8 @@ export default new Vuex.Store({
     cart,
     products,
     taos,
-    taos_tree
+    taos_tree,
+    taos_connections
   },
   strict: debug,
   plugins: debug ? [createLogger()] : []
