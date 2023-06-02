@@ -39,6 +39,7 @@ export default {
       if (res.data.code === 0) {
         let head = res.data.column_meta.map(item => item[0])
         let resData = res.data.data.map(item => Object.fromEntries(head.map((a, b) => [a, item[b]])))
+        console.log(head, resData)
         return { 'status': true, 'count': res.data.rows, 'data': resData }
       } else {
         return { 'status': false, 'msg': res.data.desc, 'code': res.data.code }

@@ -6,7 +6,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://tdengine:6041/',
+        target: 'http://192.168.1.103:6041/',
         ws: true,
         changOrigin: true,
         logLevel: "debug",
