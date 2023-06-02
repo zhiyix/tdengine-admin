@@ -3,7 +3,7 @@
     <ServerConnections ref="superTable" />
     <el-container class="main">
       <el-container class="mainContent">
-        <TaosTableTree ref="tree_ref" />
+        <TaosMain />
       </el-container>
       <el-footer>
         <el-button class="switchBtn" @click="drawer = true" type="text" size="small">
@@ -34,13 +34,13 @@
 import { mapGetters, mapState } from 'vuex'
 import { currency } from './currency'
 import ServerConnections from './components/connections/ServerConnections.vue'
-import TaosTableTree from './components/TaosTableTree'
+import TaosMain from './components/TaosMain'
 
 export default {
   name: 'App',
   components: {
     ServerConnections,
-    TaosTableTree
+    TaosMain
   },
   computed: {
     ...mapState({

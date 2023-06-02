@@ -61,10 +61,22 @@ const actions = {
       return res
     })
   },
+  change_connection_and_db({ commit }, link_db) {
+    commit('setCurrLink', link_db[0])
+    commit('setCurrDB', link_db[1])
+  },
 }
 
 // mutations
 const mutations = {
+  // Current link
+  setCurrLink (state, link) {
+    state.theLink = link
+  },
+  // 当前数据库
+  setCurrDB (state, db_name) {
+    state.theDB = db_name
+  },
   // -------------------------------------------------------------------------------------------------------
   setErrorResponse (state, status) {
     state.emitter.emit('setErrorResponse', status)

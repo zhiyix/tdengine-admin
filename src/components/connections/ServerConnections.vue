@@ -67,8 +67,9 @@ export default {
   mixins: [taos_mixin],
   computed: {
     ...mapState({
-      theDB: state => state.taos_tree.theDB,
-      emitter: state => state.taos_tree.emitter
+      theDB: state => state.taos_connections.theDB,
+      theLink: state => state.taos_connections.theLink,
+      emitter: state => state.taos_connections.emitter
     }),
     ...mapGetters('cart', {
       products: 'cartProducts',
@@ -103,6 +104,17 @@ export default {
        */
       connections: [], // 96
     }
+  },
+  watch: {
+    theLink(val) {
+      const connect_info = {
+        host: val.host,
+        port: val.port,
+        user: val.user,
+        password: val.password,
+        // database: this.theDB,
+      }
+    },
   },
   methods: {
     // L119
@@ -180,7 +192,7 @@ export default {
     // L381
     alartDB(connection, db_name) {
       //切换数据库前先清空表
-      this.$store.dispatch('taos_tree/change_link_and_db', [connection, db_name]) 
+      this.$store.dispatch('taos_connections/change_connection_and_db', [connection, db_name]) 
 
       //更新超级表页
       this.uiDrawerVisible = false
