@@ -338,7 +338,7 @@ export default {
   },
   mounted() {
     this.emitter.on("setShowTableResponse", (res) => {
-      console.log("[ConnList] setShowTableResponse: ", res)
+      console.log("[ServerConnections] setShowTableResponse: ", res)
       if (res != undefined && res != null) {
         if (res.status) {
           //
@@ -353,7 +353,7 @@ export default {
       }
     });
     this.emitter.on("setDropTableResponse", (res) => {
-      console.log("[ConnList] setDropTableResponse: ", res)
+      console.log("[ServerConnections] setDropTableResponse: ", res)
       if (res != undefined && res != null) {
         if (res.status) {
           // 删除表成功
@@ -373,7 +373,7 @@ export default {
       }
     });
     this.emitter.on("setSelectTableDataResponse", (res) => {
-      console.log("[ConnList] setSelectTableDataResponse: ", res)
+      console.log("[ServerConnections] setSelectTableDataResponse: ", res)
       if (res != undefined && res != null) {
         if (res.status) {
           //成功

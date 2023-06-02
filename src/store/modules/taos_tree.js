@@ -14,11 +14,6 @@ const getters = {}
 // actions
 const actions = {
   //--------------------------------------------------------------------------------------------
-  async init_links ({ commit }) {
-    const links = await taos_api.getLinksAndVersion()
-    return links
-  },
-  //--------------------------------------------------------------------------------------------
   // SHOW DATABASES
   async connect ({ commit, state }, connect_info) {
     const conn_res = await taos_api.connect(connect_info)

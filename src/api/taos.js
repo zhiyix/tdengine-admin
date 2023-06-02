@@ -23,12 +23,23 @@ export default {
         },
         timeout: connect_info.timeout
       })
-      if (res.data.status == 'succ') {
-        // console.log("[TAOS] data: ", res.data.data)
-        // console.log("[TAOS] rows: ", res.data.rows)
-        // console.log("[TAOS] head: ", res.data.head)
-        let head = res.data.head
+      if (res.data.status !== undefined) {
+        // Version 2.x
+        if (res.data.status == 'succ') {
+          // console.log("[TAOS] data: ", res.data.data)
+          // console.log("[TAOS] rows: ", res.data.rows)
+          // console.log("[TAOS] head: ", res.data.head)
+          let head = res.data.head
+          let resData = res.data.data.map(item => Object.fromEntries(head.map((a, b) => [a, item[b]])))
+          return { 'status': true, 'count': res.data.rows, 'data': resData }
+        } else {
+          return { 'status': false, 'msg': res.data.desc, 'code': res.data.code }
+        }
+      }
+      if (res.data.code === 0) {
+        let head = res.data.column_meta.map(item => item[0])
         let resData = res.data.data.map(item => Object.fromEntries(head.map((a, b) => [a, item[b]])))
+        console.log(head, resData)
         return { 'status': true, 'count': res.data.rows, 'data': resData }
       } else {
         return { 'status': false, 'msg': res.data.desc, 'code': res.data.code }

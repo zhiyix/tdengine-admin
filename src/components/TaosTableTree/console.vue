@@ -63,7 +63,7 @@ export default {
         "SHOW VARIABLES;",
         "SHOW DNODES;",
         "SHOW MNODES;",
-        "SHOW CONNECTIONS;",
+        "SHOW ServerConnections;",
         "SHOW FUNCTIONS;",
         "SHOW USERS;",
       ]

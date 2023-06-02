@@ -51,7 +51,7 @@ export default {
         "SHOW VARIABLES;",
         "SHOW DNODES;",
         "SHOW MNODES;",
-        "SHOW CONNECTIONS;",
+        "SHOW ServerConnections;",
         "SHOW FUNCTIONS;",
         "SHOW USERS;",
       ]
@@ -97,7 +97,7 @@ export default {
   },
   mounted() {
     this.emitter.on("setExecRawSQLResponse", (res) => {
-      console.log("[ConnList] setExecRawSQLResponse: ", res)
+      console.log("[ServerConnections] setExecRawSQLResponse: ", res)
       if (res != undefined && res != null) {
         if (res.status) {
           // let info = ''

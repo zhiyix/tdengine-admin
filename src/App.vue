@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <ConnList ref="superTable" />
+    <ServerConnections ref="superTable" />
     <el-container class="main">
       <el-container class="mainContent">
         <TaosTableTree ref="tree_ref" />
@@ -33,13 +33,13 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import { currency } from './currency'
-import ConnList from './components/ConnList.vue'
+import ServerConnections from './components/connections/ServerConnections.vue'
 import TaosTableTree from './components/TaosTableTree'
 
 export default {
   name: 'App',
   components: {
-    ConnList,
+    ServerConnections,
     TaosTableTree
   },
   computed: {

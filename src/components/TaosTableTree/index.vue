@@ -5,12 +5,12 @@
       <el-input placeholder="输入关键字进行过滤" v-model="filterText">
       </el-input>
       <el-tree class="filter-tree" lazy :data="uiTreeData" :props="defaultProps" node-key="name"
-        default-expand-all :expand-on-click-node="false" :filter-node-method="filter_tree_node" 
-        :load="load_tree_node" @node-click="on_tree_node_click" ref="tree">
+        default-expand-all :expand-on-click-node="false" :filter-node-method="onTreeNodeFilter" 
+        :load="onTreeNodeLoad" @node-click="on_tree_node_click" ref="tree">
         <span class="custom-tree-node" slot-scope="{ node, data }">
           <span>{{ node.label }}</span>
           <span class="iconWrapper2">
-            <i class="el-icon-delete" @click.stop="remove_tree_node(node, data)" v-if="node.level>1"></i>
+            <i class="el-icon-delete" @click.stop="removeTreeNode(node, data)" v-if="node.level>1"></i>
           </span>
         </span>
       </el-tree>
@@ -161,7 +161,7 @@ export default {
           break;
       }
     },
-    load_tree_node(node, resolve) {
+    onTreeNodeLoad(node, resolve) {
       // Database
       if (node.level === 0) {
         return resolve(this.rawDatabaseData);
@@ -185,7 +185,7 @@ export default {
       }
       if (node.level > 2) return resolve([]);
     },
-    filter_tree_node(value, data) {
+    onTreeNodeFilter(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
@@ -196,7 +196,7 @@ export default {
       }
       data.children.push(newChild);
     },
-    async remove_tree_node(node, data) {
+    async removeTreeNode(node, data) {
       console.log(node, data, "*******************************************************")
       const parent = node.parent
       if (node.level === 1) {

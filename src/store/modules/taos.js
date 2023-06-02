@@ -49,11 +49,6 @@ const getters = {}
 
 // actions
 const actions = {
-  async init_links ({ commit }) {
-    await taos_api.getLinksAndVersion(links => {
-      commit('setTaosLinks', links)
-    })
-  },
   // SHOW DATABASES
   connect ({ commit, state }, connect_info) {
     const savedLinks = [...state.links]

@@ -290,7 +290,7 @@ export default {
   },
   mounted() {
     this.emitter.on("setSelectSuperTableDataResponse", (res) => {
-      console.log("[ConnList] setSelectSuperTableDataResponse: ", res)
+      console.log("[ServerConnections] setSelectSuperTableDataResponse: ", res)
       if (res != undefined && res != null) {
         if (res.status) {
           //成功
@@ -319,7 +319,7 @@ export default {
       }
     });
     this.emitter.on("setDropSuperTableResponse", (res) => {
-      console.log("[ConnList] setDropSuperTableResponse: ", res)
+      console.log("[ServerConnections] setDropSuperTableResponse: ", res)
       if (res != undefined && res != null) {
         if (res.status) {
           // 删除表成功
